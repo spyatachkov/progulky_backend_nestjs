@@ -18,7 +18,6 @@ export class ExcursionsService {
     async createExcursion(dto: CreateExcursionDto) {
         const excursion = await this.excursionRepository.create(dto);
         const user = await this.userService.getUserById(dto.ownerId)
-
         const excursionInstance: ExcursionInstanceDto = {
             title: excursion.title,
             description: excursion.description,

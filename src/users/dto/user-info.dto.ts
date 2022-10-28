@@ -4,7 +4,7 @@ import {UserRoleInstanceDto} from "../../roles/dto/user-role.dto";
 // Объект c инфо пользователя
 export class UserInfoInstanceDto {
     @ApiProperty({example: '1', description: 'Идентификатор пользователя'})
-     id: number;
+    id: number;
 
     @ApiProperty({example: 'Паша', description: 'Имя'})
     name: string;

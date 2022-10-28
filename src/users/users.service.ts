@@ -4,6 +4,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {CreateUserDto} from "./dto/create-user.dto";
 import {RolesService} from "../roles/roles.service";
 import {SetRoleDto} from "./dto/set-role.dto";
+import {UserInfoInstanceDto} from "./dto/user-info.dto";
 
 @Injectable()
 export class UsersService {
@@ -31,8 +32,18 @@ export class UsersService {
     }
 
     async getUserById(id: number) {
-        // const user = await this.userRepository.findOne({where: {id}, include: {all: true}});
-        const user = await this.userRepository.findByPk(id);
+        const u = await this.userRepository.findOne({where: {id}, include: {all: true}});
+        const user: UserInfoInstanceDto = {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: {
+                id: u.role.id,
+                value: u.role.value,
+                description: u.role.description,
+            },
+        }
+        //const user = await this.userRepository.findByPk(id);
         return user;
     }
 
