@@ -18,7 +18,7 @@ import {ExcursionPlaces} from "./places/excursion-place.model";
     providers: [],
     imports: [
         ConfigModule.forRoot({
-            envFilePath: `.${process.env.NODE_ENV}.env`
+            envFilePath: `.env`
         }),
         SequelizeModule.forRoot({
             dialect: 'postgres',
