@@ -24,7 +24,7 @@ import {ExcursionPlaces} from "./places/excursion-place.model";
             dialect: 'postgres',
             host: process.env.POSTGRES_HOST,
             port: Number(process.env.POSTGRESS_PORT),
-            username: process.env.POSTGRES_USERNAME,
+            username: process.env.POSTGRES_USER,
             password: process.env.POSTGRESS_PASSWORD,
             database: process.env.POSTGRES_DB,
             models: [User, Role, UserRoles, Excursion, Place, ExcursionPlaces],
