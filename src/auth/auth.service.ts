@@ -34,6 +34,7 @@ export class AuthService {
     // Сборка объекта пользователя из его данных и его токена
     private generateAuthUserInstance(user: User, token: string) {
         const userAuthInstance: UserAuthInstanceDto = {
+            id: user.id,
             token: token,
             name: user.name,
             role: {
