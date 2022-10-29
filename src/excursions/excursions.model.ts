@@ -61,4 +61,23 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
 
     @BelongsToMany(() => Place, () => ExcursionPlaces)
     places: Place[];
+
+    static toObj(e: Excursion) {
+        return {
+            title: e.title,
+            description: e.description,
+            ownerId: e.ownerId,
+            imagePath: e.imagePath,
+            rating: e.rating,
+            duration: e.duration,
+            owner: {
+                id: e.owner.id,
+                name: e.owner.name,
+                email: e.owner.email,
+                role: e.owner.role,
+            },
+            places: e.places.map((p) => Place.toObj(p)
+            ),
+        }
+    }
 }

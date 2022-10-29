@@ -61,4 +61,16 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
 
     @HasOne(() => ExcursionPlaces, 'sort')
     sort: number;
+
+    static toObj(place: Place) {
+        return {
+            title: place.title,
+            description: place.description,
+            imagePath: place.imagePath,
+            address: place.address,
+            city: place.city,
+            latitude: place.latitude,
+            longitude: place.longitude,
+        }
+    }
 }

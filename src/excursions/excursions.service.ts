@@ -6,6 +6,11 @@ import {AddPlaceDto} from "../places/dto/add-place.dto";
 import {ExcursionInstanceDto} from "./dto/excursion-instance.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
+import {PlaceInfoDto} from "../places/dto/place-info.dto";
+import {Place} from "../places/places.model";
+import {PlacesModule} from "../places/places.module";
+import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
+import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
 
 @Injectable()
 export class ExcursionsService {
@@ -41,7 +46,7 @@ export class ExcursionsService {
 
     async getAllExcursions() {
         const excursions = await this.excursionRepository.findAll({include: {all: true},});
-        return excursions;
+        return excursions.map((e) => Excursion.toObj(e));
     }
 
     async addPlace(dto: AddPlaceDto) {
