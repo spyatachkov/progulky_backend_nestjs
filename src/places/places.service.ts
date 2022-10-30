@@ -11,18 +11,12 @@ export class PlacesService {
 
     async createPlace(dto: CreatePlaceDto) {
         const place = await this.placeRepository.create(dto);
-
-        const placeInfoInstance: PlaceInfoDto = {
+        return {
+            id: place.id,
             title: place.title,
-            description: place.description,
-            imagePath: place.imagePath,
-            address: place.address,
-            city: place.city,
             latitude: place.latitude,
             longitude: place.longitude,
-        }
-
-        return placeInfoInstance;
+        };
     }
 
     async getPlaceById(id: number) {

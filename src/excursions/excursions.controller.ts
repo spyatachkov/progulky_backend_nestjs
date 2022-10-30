@@ -3,8 +3,7 @@ import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {ExcursionsService} from "./excursions.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Excursion} from "./excursions.model";
-import {AddPlaceDto} from "../places/dto/add-place.dto";
-import {ExcursionInstanceDto} from "./dto/excursion-instance.dto";
+import {CreateExcursionResponseDto} from "./dto/create-excursion-response.dto";
 
 @ApiTags('Экскурсии')
 @Controller('excursions')
@@ -13,7 +12,7 @@ export class ExcursionsController {
     constructor(private excursionService: ExcursionsService) {}
 
     @ApiOperation({summary: "Создание экскурсии"})
-    @ApiResponse({status: 200, type: ExcursionInstanceDto})
+    @ApiResponse({status: 200, type: CreateExcursionResponseDto})
     @Post()
     createExcursion(@Body() excursionDto: CreateExcursionDto) {
         return this.excursionService.createExcursion(excursionDto);
@@ -26,13 +25,15 @@ export class ExcursionsController {
         return this.excursionService.getAllExcursions();
     }
 
-    @ApiOperation({summary: "Добавить точку к экскурсии"})
-    @ApiResponse({status: 200, type: [Excursion]})
-    @Post('/add_place')
-    addPlace(@Body() dto: AddPlaceDto) {
-        return this.excursionService.addPlace(dto);
-    }
+    // Deprecated: теперь точки привязываются вместе с созданием экскурсии
+    // @ApiOperation({summary: "Добавить точку к экскурсии"})
+    // @ApiResponse({status: 200, type: [Excursion]})
+    // @Post('/add_place')
+    // addPlace(@Body() dto: AddPlaceDto) {
+    //     return this.excursionService.addPlace(dto);
+    // }
 
+    // TODO: Удалить точку у экскурсии
     // @ApiOperation({summary: "Удалить точку у экскурсии"})
     // @ApiResponse({status: 200})
     // @Delete('/delete_place/:id')

@@ -18,4 +18,7 @@ export class CreateExcursionDto {
 
     @ApiProperty({example: '2 часа', description: 'Продолжительность экскурсии'})
     readonly duration: string;
+
+    @ApiProperty({example: [1, 2, 4, 6], description: 'Массив id-шников мест, которые относятся к этой экскурсии (в порядке на маршруте)'})
+    readonly placesIds: [number];
 }

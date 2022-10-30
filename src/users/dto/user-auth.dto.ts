@@ -13,7 +13,7 @@ export class UserAuthInstanceDto {
     name: string;
 
     @ApiProperty({example: 'user@mail.ru', description: 'Почта'})
-    email: string;
+    email: string; 
 
     @ApiProperty({example: UserRoleInstanceDto, description: 'Id роли которую хотим установить'})
     role: UserRoleInstanceDto;

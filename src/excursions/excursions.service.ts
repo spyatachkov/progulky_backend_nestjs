@@ -3,7 +3,6 @@ import {Excursion} from "./excursions.model";
 import {InjectModel} from "@nestjs/sequelize";
 import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {AddPlaceDto} from "../places/dto/add-place.dto";
-import {ExcursionInstanceDto} from "./dto/excursion-instance.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
 import {PlaceInfoDto} from "../places/dto/place-info.dto";
@@ -21,27 +20,24 @@ export class ExcursionsService {
     }
 
     async createExcursion(dto: CreateExcursionDto) {
-        const excursion = await this.excursionRepository.create(dto);
-        const user = await this.userService.getUserById(dto.ownerId)
-        const excursionInstance: ExcursionInstanceDto = {
-            title: excursion.title,
-            description: excursion.description,
-            imagePath: excursion.imagePath,
-            rating: excursion.rating,
-            duration: excursion.duration,
-            ownerId: user.id,
-            owner: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: {
-                    id: user.role.id,
-                    value: user.role.value,
-                    description: user.role.description,
-                }
+        const excursion = await this.excursionRepository.create(dto); // INSERT в таблицу экскурсий
+        //const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для вывода подробной инфы о созданной экскурсии
+
+        const excursionId = excursion.id;
+        let orderNumber = 0; // Порядковый номер в маршруте
+        for (let pId of dto.placesIds) { // Последовательная привязка всех мест с переданными айдишниками к этой экскурсии
+            if (excursion && pId) {
+                await excursion.$add('place', pId); // INSERT в таблицу привязки места к экскурсии
+                await this.updatePlaceSortValue(pId, excursionId, orderNumber) // Установка/обновление порядкового номера точки в экскурсии
+                orderNumber++;
+            } else {
+                throw new HttpException('Экскурсия или точка не найдены', HttpStatus.NOT_FOUND);
             }
+        }
+        return  {
+            id: excursion.id,
+            title: excursion.title,
         };
-        return excursionInstance;
     }
 
     async getAllExcursions() {
