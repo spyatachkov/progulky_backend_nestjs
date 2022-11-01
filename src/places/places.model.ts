@@ -27,19 +27,19 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
     id: number;
 
     @ApiProperty({example: 'Большой театр', description: 'Название места'})
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.TEXT, allowNull: true})
     title: string;
 
     @ApiProperty({example: 'Самый большой театр в стране. Поэтому и называется большой', description: 'Описание места'})
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.TEXT, allowNull: true})
     description: string;
 
     @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой'})
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.TEXT, allowNull: true})
     imagePath: string;
 
     @ApiProperty({example: 'Театральная площадь, 1', description: 'Адрес места'})
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.TEXT, allowNull: true})
     address: string;
 
     @ApiProperty({example: 'Москва', description: 'Город места'})

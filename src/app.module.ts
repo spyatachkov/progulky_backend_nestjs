@@ -5,7 +5,6 @@ import {ConfigModule} from "@nestjs/config";
 import {User} from "./users/users.model";
 import { RolesModule } from './roles/roles.module';
 import {Role} from "./roles/roles.model";
-import {UserRoles} from "./roles/user-roles.model";
 import { AuthModule } from './auth/auth.module';
 import { ExcursionsModule } from './excursions/excursions.module';
 import { PlacesModule } from './places/places.module';
@@ -27,7 +26,7 @@ import {ExcursionPlaces} from "./places/excursion-place.model";
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRESS_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Excursion, Place, ExcursionPlaces],
+            models: [User, Role, Excursion, Place, ExcursionPlaces],
             autoLoadModels: true,
         }),
         UsersModule,

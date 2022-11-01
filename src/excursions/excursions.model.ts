@@ -16,6 +16,7 @@ interface ExcursionCreationAttrs {
     title: string;
     description: string;
     ownerId: number;
+    ownerRoleValue: string;
     imagePath: string;
     rating: number;
     duration: string;
@@ -32,19 +33,23 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
     @Column({type: DataType.INTEGER, allowNull: false})
     ownerId: number;
 
+    //@ApiProperty({example: 'guide', description: 'Роль под которой была создана экскурсия'})
+    @Column({type: DataType.STRING, allowNull: true})
+    ownerRoleValue: string;
+
     @BelongsTo(() => User)
     owner: User;
 
     @ApiProperty({example: 'Интересная Москва', description: 'Название экскурсии'})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.TEXT, allowNull: false})
     title: string;
 
     @ApiProperty({example: 'Интерересное описание экскурсии', description: 'Описание экскурсии'})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.TEXT, allowNull: false})
     description: string;
 
     @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой'})
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.TEXT, allowNull: true})
     imagePath: string;
 
     @ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
@@ -70,11 +75,11 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
             imagePath: e.imagePath,
             rating: e.rating,
             duration: e.duration,
+            ownerRoleValue: e.ownerRoleValue,
             owner: {
                 id: e.owner.id,
                 name: e.owner.name,
                 email: e.owner.email,
-                role: e.owner.role,
             },
             places: e.places.map((p) => Place.toObj(p)
             ),

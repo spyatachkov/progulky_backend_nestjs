@@ -5,11 +5,6 @@ import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {AddPlaceDto} from "../places/dto/add-place.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
-import {PlaceInfoDto} from "../places/dto/place-info.dto";
-import {Place} from "../places/places.model";
-import {PlacesModule} from "../places/places.module";
-import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
-import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
 
 @Injectable()
 export class ExcursionsService {
@@ -20,8 +15,9 @@ export class ExcursionsService {
     }
 
     async createExcursion(dto: CreateExcursionDto) {
-        const excursion = await this.excursionRepository.create(dto); // INSERT в таблицу экскурсий
-        //const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для вывода подробной инфы о созданной экскурсии
+        const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для получения роли под которой была создана создаваемая экскурсия
+        const ownerRoleValue = user.role.value;
+        const excursion = await this.excursionRepository.create({...dto, ownerRoleValue: ownerRoleValue}); // INSERT в таблицу экскурсий
 
         const excursionId = excursion.id;
         let orderNumber = 0; // Порядковый номер в маршруте
@@ -42,6 +38,7 @@ export class ExcursionsService {
 
     async getAllExcursions() {
         const excursions = await this.excursionRepository.findAll({include: {all: true},});
+        //return excursions;
         return excursions.map((e) => Excursion.toObj(e));
     }
 
