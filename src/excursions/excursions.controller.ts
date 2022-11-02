@@ -1,9 +1,11 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {ExcursionsService} from "./excursions.service";
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiConsumes, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Excursion} from "./excursions.model";
 import {CreateExcursionResponseDto} from "./dto/create-excursion-response.dto";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {ApiImplicitFile} from "@nestjs/swagger/dist/decorators/api-implicit-file.decorator";
 
 @ApiTags('Экскурсии')
 @Controller('excursions')
@@ -11,11 +13,15 @@ export class ExcursionsController {
 
     constructor(private excursionService: ExcursionsService) {}
 
+    @Post()
     @ApiOperation({summary: "Создание экскурсии"})
     @ApiResponse({status: 200, type: CreateExcursionResponseDto})
-    @Post()
-    createExcursion(@Body() excursionDto: CreateExcursionDto) {
-        return this.excursionService.createExcursion(excursionDto);
+    @ApiConsumes('multipart/form-data')
+    // @ApiImplicitFile({ name: 'image', required: true })
+    @UseInterceptors(FileInterceptor('image'))
+    createExcursion(@Body() excursionDto: CreateExcursionDto,
+                    @UploadedFile() image) {
+        return this.excursionService.createExcursion(excursionDto, image);
     }
 
     @ApiOperation({summary: "Получение всех экскурсии"})

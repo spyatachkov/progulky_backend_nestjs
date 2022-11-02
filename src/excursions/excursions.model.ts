@@ -7,17 +7,17 @@ import {
     Model,
     Table
 } from "sequelize-typescript";
-import {ApiProperty} from "@nestjs/swagger";
 import {User} from "../users/users.model";
 import {Place} from "../places/places.model";
 import {ExcursionPlaces} from "../places/excursion-place.model";
+import {ApiProperty} from "@nestjs/swagger";
 
 interface ExcursionCreationAttrs {
     title: string;
     description: string;
     ownerId: number;
     ownerRoleValue: string;
-    imagePath: string;
+    image: string;
     rating: number;
     duration: string;
 }
@@ -33,7 +33,7 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
     @Column({type: DataType.INTEGER, allowNull: false})
     ownerId: number;
 
-    //@ApiProperty({example: 'guide', description: 'Роль под которой была создана экскурсия'})
+    @ApiProperty({example: 'guide', description: 'Роль под которой была создана экскурсия'})
     @Column({type: DataType.STRING, allowNull: true})
     ownerRoleValue: string;
 
@@ -48,9 +48,9 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
     @Column({type: DataType.TEXT, allowNull: false})
     description: string;
 
-    @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой'})
+    @ApiProperty({example: 'pic.jpg', description: 'Название картинки'})
     @Column({type: DataType.TEXT, allowNull: true})
-    imagePath: string;
+    image: string;
 
     @ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
     @Column({type: DataType.DOUBLE, allowNull: true})
@@ -72,7 +72,7 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
             title: e.title,
             description: e.description,
             ownerId: e.ownerId,
-            imagePath: e.imagePath,
+            imagePath: e.image,
             rating: e.rating,
             duration: e.duration,
             ownerRoleValue: e.ownerRoleValue,

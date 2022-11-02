@@ -10,15 +10,15 @@ export class CreateExcursionDto {
     @ApiProperty({example: '1', description: 'Id пользователя, который создал экскурсию'})
     readonly ownerId: number;
 
-    @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой экскурсии'})
-    readonly imagePath: string;
+    @ApiProperty({type: 'file', description: 'Файл картинки'})
+    readonly image: string;
 
-    @ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
+    //@ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
     readonly rating: number;
 
     @ApiProperty({example: '2 часа', description: 'Продолжительность экскурсии'})
     readonly duration: string;
 
-    @ApiProperty({example: [1, 2, 4, 6], description: 'Массив id-шников мест, которые относятся к этой экскурсии (в порядке на маршруте)'})
-    readonly placesIds: [number];
+    @ApiProperty({example: '1, 2, 4, 6', description: 'Строка id-шников мест, которые относятся к этой экскурсии (в порядке на маршруте)'})
+    readonly placesIds: string;
 }

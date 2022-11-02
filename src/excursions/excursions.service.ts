@@ -5,26 +5,31 @@ import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {AddPlaceDto} from "../places/dto/add-place.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
+import {FilesService} from "../files/files.service";
 
 @Injectable()
 export class ExcursionsService {
 
     constructor(@InjectModel(Excursion) private excursionRepository: typeof Excursion,
                 @InjectModel(ExcursionPlaces) private excursionPlaces: typeof ExcursionPlaces,
-                private userService: UsersService) {
+                private userService: UsersService,
+                private fileService: FilesService) {
     }
 
-    async createExcursion(dto: CreateExcursionDto) {
+    async createExcursion(dto: CreateExcursionDto, image: any) {
+        const filaName =  await this.fileService.createFile(image);
+
         const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для получения роли под которой была создана создаваемая экскурсия
         const ownerRoleValue = user.role.value;
-        const excursion = await this.excursionRepository.create({...dto, ownerRoleValue: ownerRoleValue}); // INSERT в таблицу экскурсий
+        const excursion = await this.excursionRepository.create({...dto, image: filaName, ownerRoleValue: ownerRoleValue, }); // INSERT в таблицу экскурсий
 
         const excursionId = excursion.id;
         let orderNumber = 0; // Порядковый номер в маршруте
-        for (let pId of dto.placesIds) { // Последовательная привязка всех мест с переданными айдишниками к этой экскурсии
+        const placesIds = dto.placesIds.split(","); // Полученную строку с айдишниками превращаю в массив строк
+        for (let pId of placesIds) { // Последовательная привязка всех мест с переданными айдишниками к этой экскурсии
             if (excursion && pId) {
-                await excursion.$add('place', pId); // INSERT в таблицу привязки места к экскурсии
-                await this.updatePlaceSortValue(pId, excursionId, orderNumber) // Установка/обновление порядкового номера точки в экскурсии
+                await excursion.$add('place', Number(pId)); // INSERT в таблицу привязки места к экскурсии
+                await this.updatePlaceSortValue(Number(pId), excursionId, orderNumber) // Установка/обновление порядкового номера точки в экскурсии
                 orderNumber++;
             } else {
                 throw new HttpException('Экскурсия или точка не найдены', HttpStatus.NOT_FOUND);
