@@ -6,12 +6,14 @@ import {Place} from "./places.model";
 import {Excursion} from "../excursions/excursions.model";
 import {ExcursionPlaces} from "./excursion-place.model";
 import {User} from "../users/users.model";
+import {FilesModule} from "../files/files.module";
 
 @Module({
   controllers: [PlacesController],
   providers: [PlacesService],
   imports: [
     SequelizeModule.forFeature([User, Place, Excursion, ExcursionPlaces]),
+    FilesModule
   ],
 })
 export class PlacesModule {}

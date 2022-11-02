@@ -12,7 +12,7 @@ import {ExcursionPlaces} from "./excursion-place.model";
 interface PlaceCreationAttrs {
     title: string;
     description: string;
-    imagePath: string;
+    image: string;
     sort: number;
     address: string;
     city: string;
@@ -34,9 +34,9 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
     @Column({type: DataType.TEXT, allowNull: true})
     description: string;
 
-    @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой'})
+    @ApiProperty({example: 'pig.img', description: 'Название картинки'})
     @Column({type: DataType.TEXT, allowNull: true})
-    imagePath: string;
+    image: string;
 
     @ApiProperty({example: 'Театральная площадь, 1', description: 'Адрес места'})
     @Column({type: DataType.TEXT, allowNull: true})
@@ -66,7 +66,7 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
         return {
             title: place.title,
             description: place.description,
-            imagePath: place.imagePath,
+            imagePath: place.image,
             address: place.address,
             city: place.city,
             latitude: place.latitude,
