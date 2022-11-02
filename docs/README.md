@@ -236,8 +236,8 @@
 
 Картинку можно получить:
 <br>
-1. Для Excursion -> ```/static/images/excursions/<image_name.jpg>```
-2. Для Place -> ```/static/images/places/<image_name.jpg>```
+1. Для Excursion -> ```/images/excursions/<image_name.jpg>```
+2. Для Place -> ```/images/places/<image_name.jpg>```
 
 <hr>
 
