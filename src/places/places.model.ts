@@ -59,7 +59,6 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
     @BelongsToMany(() => Excursion, () => ExcursionPlaces)
     excursions: Excursion[];
 
-    @HasOne(() => ExcursionPlaces, 'sort')
     sort: number;
 
     static toObj(place: Place) {
