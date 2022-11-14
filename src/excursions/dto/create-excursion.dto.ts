@@ -13,11 +13,11 @@ export class CreateExcursionDto {
     @ApiProperty({type: 'file', description: 'Файл картинки'})
     readonly image: string;
 
-    //@ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
-    readonly rating: number;
+    @ApiProperty({example: '60', description: 'Продолжительность экскурсии (мин)'})
+    readonly duration: number;
 
-    @ApiProperty({example: '2 часа', description: 'Продолжительность экскурсии'})
-    readonly duration: string;
+    @ApiProperty({example: '3.3', description: 'Расстояние всего маршрута (км)'})
+    readonly distance: number;
 
     @ApiProperty({example: '1, 2, 4, 6', description: 'Строка id-шников мест, которые относятся к этой экскурсии (в порядке на маршруте)'})
     readonly placesIds: string;

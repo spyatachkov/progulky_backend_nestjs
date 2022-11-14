@@ -13,14 +13,17 @@ export class ExtendedExcursionInstanceDto {
     @ApiProperty({example: '1', description: 'Id пользователя, который создал экскурсию'})
     readonly ownerId: number;
 
-    @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'Путь до файла с картинкой экскурсии'})
-    readonly imagePath: string;
+    @ApiProperty({example: 'picture.jpg', description: 'Название файла на диске'})
+    readonly image: string;
 
     @ApiProperty({example: '4.91', description: 'Рейтинг экскурсии'})
     readonly rating: number;
 
-    @ApiProperty({example: '2 часа', description: 'Продолжительность экскурсии'})
+    @ApiProperty({example: '60', description: 'Продолжительность экскурсии (мин)'})
     readonly duration: string;
+
+    @ApiProperty({example: '3.3', description: 'Расстояние всего маршрута (км)'})
+    readonly distance: number;
 
     @ApiProperty({example: UserInfoInstanceDto, description: 'Владелец (создатель) экскурсии'})
     readonly owner: UserInfoInstanceDto;

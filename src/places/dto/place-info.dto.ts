@@ -7,8 +7,8 @@ export class PlaceInfoDto {
     @ApiProperty({example: 'Самый большой театр в стране. Поэтому и называется большой', description: 'Описание места'})
     readonly description: string;
 
-    @ApiProperty({example: 'site.com/image/pic/pig.img', description: 'URL картикни'})
-    readonly imagePath: string;
+    @ApiProperty({example: 'picture.jpg', description: 'Название картинки на диске'})
+    readonly image: string;
 
     @ApiProperty({example: 'Театральная площадь, 1', description: 'Адрес точки'})
     readonly address: string;

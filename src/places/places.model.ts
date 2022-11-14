@@ -65,7 +65,7 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
         return {
             title: place.title,
             description: place.description,
-            imagePath: place.image,
+            image: place.image,
             address: place.address,
             city: place.city,
             latitude: place.latitude,

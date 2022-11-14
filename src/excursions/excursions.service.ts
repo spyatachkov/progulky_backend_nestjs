@@ -1,11 +1,11 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {Excursion} from "./excursions.model";
 import {InjectModel} from "@nestjs/sequelize";
-import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {AddPlaceDto} from "../places/dto/add-place.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
 import {FilesService} from "../files/files.service";
+import {CreateExcursionDto} from "./dto/create-excursion.dto";
 
 @Injectable()
 export class ExcursionsService {
@@ -19,13 +19,23 @@ export class ExcursionsService {
     async createExcursion(dto: CreateExcursionDto, image: any) {
         const filaName =  await this.fileService.createFile(image);
 
+        const placesIds = dto.placesIds.split(","); // Полученную строку с айдишниками превращаю в массив строк
+        const numberOfPoints = placesIds.length; // Количество точек на маршруте
+
         const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для получения роли под которой была создана создаваемая экскурсия
         const ownerRoleValue = user.role.value;
-        const excursion = await this.excursionRepository.create({...dto, image: filaName, ownerRoleValue: ownerRoleValue, }); // INSERT в таблицу экскурсий
+
+
+        const excursion = await this.excursionRepository.create({
+            ...dto,
+            image: filaName,
+            ownerRoleValue: ownerRoleValue,
+            numberOfPoints: numberOfPoints
+        }); // INSERT в таблицу экскурсий
 
         const excursionId = excursion.id;
         let orderNumber = 0; // Порядковый номер в маршруте
-        const placesIds = dto.placesIds.split(","); // Полученную строку с айдишниками превращаю в массив строк
+
         for (let pId of placesIds) { // Последовательная привязка всех мест с переданными айдишниками к этой экскурсии
             if (excursion && pId) {
                 await excursion.$add('place', Number(pId)); // INSERT в таблицу привязки места к экскурсии

@@ -8,18 +8,20 @@ import {
     Table
 } from "sequelize-typescript";
 import {User} from "../users/users.model";
+import {ApiProperty} from "@nestjs/swagger";
 import {Place} from "../places/places.model";
 import {ExcursionPlaces} from "../places/excursion-place.model";
-import {ApiProperty} from "@nestjs/swagger";
 
 interface ExcursionCreationAttrs {
     title: string;
     description: string;
     ownerId: number;
     ownerRoleValue: string;
-    image: string;
-    rating: number;
-    duration: string;
+    image: string; // Ссылка на картинку
+    duration: number; // Продолжительность в минутах (int)
+    distance: number; // Дистанция в километрах (double)
+    rating: number; // Рейтинг (double)
+    numberOfPoints: number; // Количество точек на маршруте (int)
 }
 
 @Table({tableName: 'excursions'})
@@ -56,9 +58,17 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
     @Column({type: DataType.DOUBLE, allowNull: true})
     rating: number;
 
-    @ApiProperty({example: '2 часа', description: 'Продолжительность экскурсии'})
-    @Column({type: DataType.STRING, allowNull: true})
-    duration: string;
+    @ApiProperty({example: '2', description: 'Продолжительность экскурсии (мин)'})
+    @Column({type: DataType.INTEGER, allowNull: true})
+    duration: number;
+
+    @ApiProperty({example: '5', description: 'Количество точек на маршруте'})
+    @Column({type: DataType.INTEGER, allowNull: true})
+    numberOfPoints: number;
+
+    @ApiProperty({example: '3.3', description: 'Дистанция в километрах'})
+    @Column({type: DataType.DOUBLE, allowNull: true})
+    distance: number;
 
     @ApiProperty({example: 'true', description: 'Экскурсия не заблокирована'})
     @Column({type: DataType.BOOLEAN, defaultValue: false})
@@ -72,9 +82,11 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
             title: e.title,
             description: e.description,
             ownerId: e.ownerId,
-            imagePath: e.image,
+            image: e.image,
             rating: e.rating,
             duration: e.duration,
+            distance: e.distance,
+            numberOfPoints: e.numberOfPoints,
             ownerRoleValue: e.ownerRoleValue,
             owner: {
                 id: e.owner.id,
