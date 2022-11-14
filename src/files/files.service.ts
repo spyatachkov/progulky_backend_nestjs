@@ -11,7 +11,7 @@ export class FilesService {
     async createFile(file): Promise<string> {
         try {
             const fileName = uuid.v4() + '.jpg';
-            const filePath = path.resolve(__dirname, '..', 'static/images/excursions');
+            const filePath = path.resolve(__dirname, '../../../', 'files/images/excursions'); // файлы сохраняются в папку на диске рядом с проектом
             if (!fs.existsSync(filePath)) {
                 fs.mkdirSync(filePath, {recursive: true});
             }
@@ -26,7 +26,7 @@ export class FilesService {
     async createPlaceFile(file): Promise<string> {
         try {
             const placeFileName = uuid.v4() + '.jpg';
-            const placeFilePath = path.resolve(__dirname, '..', 'static/images/places');
+            const placeFilePath = path.resolve(__dirname, '../../../', 'files/images/places'); // файлы сохраняются в папку на диске рядом с проектом
             if (!fs.existsSync(placeFilePath)) {
                 fs.mkdirSync(placeFilePath, {recursive: true});
             }

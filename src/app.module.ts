@@ -23,7 +23,7 @@ import * as path from 'path';
             envFilePath: `.env`
         }),
         ServeStaticModule.forRoot({
-           rootPath: path.resolve(__dirname, 'static'),
+           rootPath: path.resolve(__dirname, '../../', 'files'), // файлы отдаются из директории files созданной рядом с проектом
         }),
         SequelizeModule.forRoot({
             dialect: 'postgres',
