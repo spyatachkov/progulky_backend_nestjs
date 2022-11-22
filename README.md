@@ -40,6 +40,10 @@ pm2 start dist/main.js --name progulkyapi
 $ pm2 startup systemd
 $ pm2 save
 
+# ----------------
+$ pm2 list # посмотреть запущенные процессы
+$ pm2 delete <id> # удалить процесс с этим id
+
 ```
 
 ## Файлы
