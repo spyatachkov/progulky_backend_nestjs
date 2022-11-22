@@ -1,4 +1,4 @@
-# API for "PROgulki" iOS app
+# API for "PROgulky" iOS app
 
 ## Description
 
