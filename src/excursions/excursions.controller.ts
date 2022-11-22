@@ -6,6 +6,7 @@ import {Excursion} from "./excursions.model";
 import {CreateExcursionResponseDto} from "./dto/create-excursion-response.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ApiImplicitFile} from "@nestjs/swagger/dist/decorators/api-implicit-file.decorator";
+import {BodyWithValidation} from "../decorators";
 
 @ApiTags('Экскурсии')
 @Controller('excursions')
@@ -19,7 +20,7 @@ export class ExcursionsController {
     @ApiConsumes('multipart/form-data')
     // @ApiImplicitFile({ name: 'image', required: true })
     @UseInterceptors(FileInterceptor('image'))
-    createExcursion(@Body() excursionDto: CreateExcursionDto,
+    createExcursion(@BodyWithValidation() excursionDto: CreateExcursionDto,
                     @UploadedFile() image) {
         return this.excursionService.createExcursion(excursionDto, image);
     }

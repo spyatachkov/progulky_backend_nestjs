@@ -1,7 +1,7 @@
 import {
     BelongsToMany,
     Column,
-    DataType, HasOne,
+    DataType,
     Model,
     Table
 } from "sequelize-typescript";
@@ -16,8 +16,8 @@ interface PlaceCreationAttrs {
     sort: number;
     address: string;
     city: string;
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
 }
 
 @Table({tableName: 'places'})
@@ -48,18 +48,16 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
 
     // Широта
     @ApiProperty({example: '55.760452', description: 'Широта'})
-    @Column({type: DataType.STRING, allowNull: false})
-    latitude: string;
+    @Column({type: DataType.DOUBLE, allowNull: false})
+    latitude: number;
 
     // Долгота
     @ApiProperty({example: '37.618373', description: 'Долгота'})
-    @Column({type: DataType.STRING, allowNull: false})
-    longitude: string;
+    @Column({type: DataType.DOUBLE, allowNull: false})
+    longitude: number;
 
     @BelongsToMany(() => Excursion, () => ExcursionPlaces)
     excursions: Excursion[];
-
-    sort: number;
 
     static toObj(place: Place) {
         return {

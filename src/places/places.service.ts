@@ -14,7 +14,12 @@ export class PlacesService {
     async createPlace(dto: CreatePlaceDto, image: any) {
         const filaName =  await this.fileService.createPlaceFile(image);
 
-        const place = await this.placeRepository.create({...dto, image: filaName});
+        const place = await this.placeRepository.create({
+            ...dto,
+            image: filaName,
+            latitude: Number(dto.latitude),
+            longitude: Number(dto.longitude)
+        });
         return {
             id: place.id,
             title: place.title,

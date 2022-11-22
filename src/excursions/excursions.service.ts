@@ -16,21 +16,29 @@ export class ExcursionsService {
                 private fileService: FilesService) {
     }
 
+    // в этой функции приведение к Number() идет из-за того, что на уровне декоратора
+    // проверилось, что в запросе была строка в которой было число, а так как в multipart form data
+    // всегда строки, непонятно как вообще может эта строка кастоваться в число, поэтому сделан принудительный каст и проверка
     async createExcursion(dto: CreateExcursionDto, image: any) {
         const filaName =  await this.fileService.createFile(image);
 
         const placesIds = dto.placesIds.split(","); // Полученную строку с айдишниками превращаю в массив строк
+        // TODO: сделать проверку на то, что в полученном массиве значения, которые кастуются в число
         const numberOfPoints = placesIds.length; // Количество точек на маршруте
 
-        const user = await this.userService.getUserById(dto.ownerId); // SELECT овнера для получения роли под которой была создана создаваемая экскурсия
-        const ownerRoleValue = user.role.value;
+        const ownerId = Number(dto.ownerId);
 
+        const user = await this.userService.getUserById(ownerId); // SELECT овнера для получения роли под которой была создана создаваемая экскурсия
+        const ownerRoleValue = user.role.value;
 
         const excursion = await this.excursionRepository.create({
             ...dto,
             image: filaName,
             ownerRoleValue: ownerRoleValue,
-            numberOfPoints: numberOfPoints
+            numberOfPoints: numberOfPoints,
+            ownerId: Number(dto.ownerId),
+            duration: Number(dto.duration),
+            distance: Number(dto.distance),
         }); // INSERT в таблицу экскурсий
 
         const excursionId = excursion.id;

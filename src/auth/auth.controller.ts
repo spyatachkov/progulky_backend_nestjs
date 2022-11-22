@@ -4,6 +4,7 @@ import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
 import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
 import {LoginUserDto} from "../users/dto/login-user.dto";
+import {BodyWithValidation} from "../decorators";
 
 @ApiTags('Авторизация и регистрация')
 @Controller('auth')
@@ -21,7 +22,7 @@ export class AuthController {
     @ApiOperation({summary: "Регистрация"})
     @ApiResponse({status: 200, type: UserAuthInstanceDto})
     @Post('/registration')
-    registration(@Body() userDto: CreateUserDto) {
+    registration(@BodyWithValidation() userDto: CreateUserDto) {
         return this.authService.registration(userDto);
     }
 }
