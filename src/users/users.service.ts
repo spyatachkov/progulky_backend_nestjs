@@ -48,7 +48,7 @@ export class UsersService {
     }
 
     async setRoleByValue(setRoleDto: SetRoleDto) {
-        User.findOne({where: {name: setRoleDto.name}}).then((user) => {
+        User.findOne({where: {email: setRoleDto.email}}).then((user) => {
             user.roleId = setRoleDto.roleId;
             return user.save();
         });

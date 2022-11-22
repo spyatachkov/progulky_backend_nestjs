@@ -4,6 +4,7 @@ import {CreateRoleDto} from "./dto/create-role.dto";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "../users/users.model";
 import {Role} from "./roles.model";
+import {BodyWithValidation} from "../decorators";
 
 @ApiTags('Роли')
 @Controller('roles')
@@ -13,7 +14,7 @@ export class RolesController {
     @ApiOperation({summary: "Создание роли"})
     @ApiResponse({status: 200, type: Role})
     @Post()
-    create(@Body() dto: CreateRoleDto) {
+    create(@BodyWithValidation() dto: CreateRoleDto) {
         return this.roleService.createRole(dto);
     }
 

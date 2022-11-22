@@ -1,10 +1,8 @@
-import {Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Controller, Get, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {CreatePlaceDto} from "./dto/create-place.dto";
 import {ApiConsumes, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Place} from "./places.model";
-import {Role} from "../roles/roles.model";
 import {PlacesService} from "./places.service";
-import {AddPlaceDto} from "./dto/add-place.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {BodyWithValidation, IdParam} from "../decorators";
 

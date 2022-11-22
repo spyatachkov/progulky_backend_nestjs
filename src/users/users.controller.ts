@@ -5,6 +5,7 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./users.model";
 import {Role} from "../roles/roles.model";
 import {SetRoleDto} from "./dto/set-role.dto";
+import {BodyWithValidation} from "../decorators";
 
 @ApiTags('Пользователи')
 @Controller('users')
@@ -15,7 +16,7 @@ export class UsersController {
     // @ApiOperation({summary: "Создание пользователя"})
     // @ApiResponse({status: 200, type: User})
     // @Post()
-    create(@Body() userDto: CreateUserDto) {
+    create(@BodyWithValidation() userDto: CreateUserDto) {
         return this.userService.createUser(userDto);
     }
 
@@ -29,7 +30,7 @@ export class UsersController {
     @ApiOperation({summary: "Выдача роли по значению"})
     @ApiResponse({status: 200, type: Role})
     @Patch('set_role')
-    setRoleByValue(@Body() setRoleDto: SetRoleDto) {
+    setRoleByValue(@BodyWithValidation() setRoleDto: SetRoleDto) {
         return this.userService.setRoleByValue(setRoleDto);
     }
 }
