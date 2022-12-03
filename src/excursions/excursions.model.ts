@@ -83,6 +83,7 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
 
     static toObj(e: Excursion) {
         return {
+            id: e.id,
             title: e.title,
             description: e.description,
             ownerId: e.ownerId,
