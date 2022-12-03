@@ -46,7 +46,7 @@ export class ExcursionsService {
         }); // INSERT в таблицу экскурсий
 
         const excursionId = excursion.id;
-        let orderNumber = 0; // Порядковый номер в маршруте
+        let orderNumber = 1; // Порядковый номер в маршруте
 
         for (let pId of placesIds) { // Последовательная привязка всех мест с переданными айдишниками к этой экскурсии
             if (excursion && pId) {

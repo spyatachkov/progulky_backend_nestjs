@@ -98,7 +98,7 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
                 name: e.owner.name,
                 email: e.owner.email,
             },
-            places: e.places.map((p) => Place.toObj(p)
+            places: e.places.map((p, sort) => Place.toObj(p, sort)
             ),
         }
     }
