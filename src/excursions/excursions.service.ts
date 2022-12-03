@@ -6,12 +6,16 @@ import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
 import {FilesService} from "../files/files.service";
 import {CreateExcursionDto} from "./dto/create-excursion.dto";
+import {UsersFavoritesExcursions} from "../users/users-favorites-excursions.model";
+import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
+import {DeleteExcursionFromFavoritesDto} from "./dto/delete-excursion-from-favorites.dto";
 
 @Injectable()
 export class ExcursionsService {
 
     constructor(@InjectModel(Excursion) private excursionRepository: typeof Excursion,
                 @InjectModel(ExcursionPlaces) private excursionPlaces: typeof ExcursionPlaces,
+                @InjectModel(UsersFavoritesExcursions) private usersFavoritesExcursions: typeof UsersFavoritesExcursions,
                 private userService: UsersService,
                 private fileService: FilesService) {
     }
@@ -93,5 +97,33 @@ export class ExcursionsService {
 
     private async selectAllPlacesExcursionById(excursionId: number) {
         return await this.excursionPlaces.findAll({where: {excursionId: excursionId}});
+    }
+
+    // Добавление экскурсии в избранное по айди этой экскурсии для пользователя с переданным id
+    async addExcursionToFavorites(dto: AddExcursionToFavoritesDto) {
+        const fe = await this.issetFavoritesExcursions(dto.userId, dto.excursionId);
+
+        // проверка на дубликат
+        if (fe.length != 0) {
+            throw new HttpException('Экскурсия с id = ' + dto.excursionId + ' уже есть в избранном у пользователя с id = ' + dto.userId, HttpStatus.OK);
+        }
+
+        const excursion = await this.usersFavoritesExcursions.create({
+            ...dto
+        });
+        return excursion;
+    }
+
+    // проверка - есть ли уже экскурсия с переданным id у пользователя с переданным id
+    private async issetFavoritesExcursions(userId: number, excursionId: number) {
+        const fe = await this.usersFavoritesExcursions.findAll({where: {userId: userId, excursionId: excursionId}})
+        return fe;
+    }
+
+    // Удаление экскурсии из избранного пользователя
+    async deleteExcursionFromFavorites(dto: DeleteExcursionFromFavoritesDto) {
+        const excursion = await this.usersFavoritesExcursions.destroy({where: {userId: dto.userId, excursionId: dto.excursionId}})
+        const message = excursion == 1 ? {"message": "successful deletion"}: {"message": "nothing to delete"};
+        return message
     }
 }

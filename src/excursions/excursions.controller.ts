@@ -7,6 +7,7 @@ import {CreateExcursionResponseDto} from "./dto/create-excursion-response.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ApiImplicitFile} from "@nestjs/swagger/dist/decorators/api-implicit-file.decorator";
 import {BodyWithValidation} from "../decorators";
+import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
 
 @ApiTags('Экскурсии')
 @Controller('excursions')
@@ -30,6 +31,20 @@ export class ExcursionsController {
     @Get()
     getAllExcursions() {
         return this.excursionService.getAllExcursions();
+    }
+
+    @Post('add_favorite')
+    @ApiOperation({summary: "Добавить экскурсию в избранное пользователя"})
+    @ApiResponse({status: 200, type: AddExcursionToFavoritesDto}) // TODO: какую модель возвращать???
+    addExcursionToFavorites(@BodyWithValidation() dto: AddExcursionToFavoritesDto) {
+        return this.excursionService.addExcursionToFavorites(dto)
+    }
+
+    @Delete('delete_favorite')
+    @ApiOperation({summary: "Удалить экскурсию из избранного пользователя"})
+    @ApiResponse({status: 200}) // TODO: какую модель возвращать???
+    deleteExcursionFromFavorites(@BodyWithValidation() dto: AddExcursionToFavoritesDto) {
+        return this.excursionService.deleteExcursionFromFavorites(dto)
     }
 
     // Deprecated: теперь точки привязываются вместе с созданием экскурсии

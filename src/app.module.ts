@@ -14,6 +14,7 @@ import {ExcursionPlaces} from "./places/excursion-place.model";
 import { FilesModule } from './files/files.module';
 import {ServeStaticModule} from "@nestjs/serve-static";
 import * as path from 'path';
+import {UsersFavoritesExcursions} from "./users/users-favorites-excursions.model";
 
 @Module({
     controllers: [],
@@ -32,7 +33,7 @@ import * as path from 'path';
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRESS_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, Excursion, Place, ExcursionPlaces],
+            models: [User, Role, Excursion, Place, ExcursionPlaces, UsersFavoritesExcursions],
             autoLoadModels: true,
         }),
         UsersModule,

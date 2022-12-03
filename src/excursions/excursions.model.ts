@@ -11,6 +11,7 @@ import {User} from "../users/users.model";
 import {ApiProperty} from "@nestjs/swagger";
 import {Place} from "../places/places.model";
 import {ExcursionPlaces} from "../places/excursion-place.model";
+import {UsersFavoritesExcursions} from "../users/users-favorites-excursions.model";
 
 interface ExcursionCreationAttrs {
     title: string;
@@ -76,6 +77,9 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
 
     @BelongsToMany(() => Place, () => ExcursionPlaces)
     places: Place[];
+
+    @BelongsToMany(() => User, () => UsersFavoritesExcursions)
+    users: User[];
 
     static toObj(e: Excursion) {
         return {

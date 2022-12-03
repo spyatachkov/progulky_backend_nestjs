@@ -6,6 +6,8 @@ import {User} from "./users.model";
 import {Role} from "../roles/roles.model";
 import {SetRoleDto} from "./dto/set-role.dto";
 import {BodyWithValidation} from "../decorators";
+import {GetFavoritesExcursionsDto} from "./dto/get-favorites-excursions.dto";
+import {Excursion} from "../excursions/excursions.model";
 
 @ApiTags('Пользователи')
 @Controller('users')
@@ -33,4 +35,12 @@ export class UsersController {
     setRoleByValue(@BodyWithValidation() setRoleDto: SetRoleDto) {
         return this.userService.setRoleByValue(setRoleDto);
     }
+
+    @ApiOperation({summary: "Получить избранные экскурсии"})
+    @ApiResponse({status: 200, type: Excursion})
+    @Post('favorites_excursions')
+    getExcursions(@BodyWithValidation() dto: GetFavoritesExcursionsDto) {
+        return this.userService.getFavoritesExcursions(dto)
+    }
+
 }
