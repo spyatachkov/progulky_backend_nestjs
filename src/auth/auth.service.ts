@@ -47,6 +47,15 @@ export class AuthService {
         return userAuthInstance;
     }
 
+    // Получает на вход JWT токен и возвращает объект пользователя
+    async verifyToken(token: string) {
+        try {
+            return this.jwtService.verify(token);
+        } catch (_) {
+            throw new UnauthorizedException({message: 'Ошибка авторизации'})
+        }
+    }
+
     private async generateToken(user: User) {
         const payload = {id: user.id, name: user.name, email: user.email, roles: user.role};
         return {

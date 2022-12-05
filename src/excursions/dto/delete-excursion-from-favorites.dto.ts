@@ -6,9 +6,4 @@ export class DeleteExcursionFromFavoritesDto {
     @IsDefined()
     @IsNumber()
     readonly excursionId: number;
-
-    @ApiProperty({example: '1', description: 'id пользователя, у которого надо удалить из избранного'})
-    @IsDefined()
-    @IsNumber()
-    readonly userId: number;
 }

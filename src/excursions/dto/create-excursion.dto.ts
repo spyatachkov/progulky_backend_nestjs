@@ -12,11 +12,6 @@ export class CreateExcursionDto {
     @IsString()
     readonly description: string;
 
-    @ApiProperty({example: '1', description: 'Id пользователя, который создал экскурсию', type: "number"})
-    @IsDefined()
-    @IsNumberString()
-    readonly ownerId: string;
-
     @ApiProperty({type: 'file', description: 'Файл картинки'})
     readonly image: string;
 

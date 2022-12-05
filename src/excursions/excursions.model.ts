@@ -86,6 +86,7 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
             id: e.id,
             title: e.title,
             description: e.description,
+            isFavorite: false,
             ownerId: e.ownerId,
             image: e.image,
             rating: e.rating,

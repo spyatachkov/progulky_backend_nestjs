@@ -6,9 +6,4 @@ export class AddExcursionToFavoritesDto {
     @IsDefined()
     @IsNumber()
     readonly excursionId: number;
-
-    @ApiProperty({example: '1', description: 'id пользователя, который добавляет экскурсию в избранное'})
-    @IsDefined()
-    @IsNumber()
-    readonly userId: number;
 }
