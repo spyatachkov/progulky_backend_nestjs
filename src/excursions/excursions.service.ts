@@ -122,6 +122,7 @@ export class ExcursionsService {
                 e.rating,
                 e.duration,
                 e.distance,
+                e.numberOfPoints,
                 {
                     id: e.owner.id,
                     name: e.owner.name,

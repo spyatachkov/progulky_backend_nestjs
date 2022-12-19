@@ -14,6 +14,7 @@ export class ExtendedExcursionInstanceDto {
                 rating,
                 duration,
                 distance,
+                numberOfPoints,
                 owner,
                 places) {
         this.id = id;
@@ -26,6 +27,7 @@ export class ExtendedExcursionInstanceDto {
         this.rating = rating;
         this.duration = duration;
         this.distance = distance;
+        this.numberOfPoints = numberOfPoints;
         this.owner = owner;
         this.places = places;
     }
@@ -59,6 +61,9 @@ export class ExtendedExcursionInstanceDto {
 
     @ApiProperty({example: '3.3', description: 'Расстояние всего маршрута (км)'})
     readonly distance: number;
+
+    @ApiProperty({example: '3', description: 'Количество точек в маршруте'})
+    readonly numberOfPoints: string;
 
     @ApiProperty({example: UserInfoInstanceDto, description: 'Владелец (создатель) экскурсии'})
     readonly owner: UserInfoInstanceDto;
