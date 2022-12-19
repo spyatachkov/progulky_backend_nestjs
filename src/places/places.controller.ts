@@ -27,4 +27,11 @@ export class PlacesController {
     getById(@IdParam('id') id: number) {
         return this.placeService.getPlaceById(id);
     }
+
+    @ApiOperation({summary: "Получение всех мест"})
+    @ApiResponse({status: 200, type: [Place]})
+    @Get()
+    getAllPlaces() {
+        return this.placeService.getAllPlaces();
+    }
 }

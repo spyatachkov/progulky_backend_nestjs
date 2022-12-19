@@ -1,6 +1,27 @@
 import {ApiProperty} from "@nestjs/swagger";
 
 export class PlaceInfoDto {
+    constructor(id,
+                title,
+                description,
+                image,
+                address,
+                city,
+                latitude,
+                longitude) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.image = image;
+        this.address = address;
+        this.city = city;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    @ApiProperty({example: '1', description: 'Уникальный идетификатор'})
+    readonly id: number
+
     @ApiProperty({example: 'Большой театр', description: 'Заголовок точки'})
     readonly title: string;
 

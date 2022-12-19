@@ -71,4 +71,19 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
             longitude: place.longitude,
         }
     }
+
+    // делает из модели объект, который возвращается в списке всех добавленных в базу мест
+    // ручка GET /places
+    static toInfoPlaceInstance(place: Place) {
+        return {
+            id: place.id,
+            title: place.title,
+            description: place.description,
+            image: place.image,
+            address: place.address,
+            city: place.city,
+            latitude: place.latitude,
+            longitude: place.longitude,
+        }
+    }
 }

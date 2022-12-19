@@ -4,6 +4,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Place} from "./places.model";
 import {PlaceInfoDto} from "./dto/place-info.dto";
 import {FilesService} from "../files/files.service";
+import {ExtendedExcursionInstanceDto} from "../excursions/dto/extended-excursion-instance.dto";
 
 @Injectable()
 export class PlacesService {
@@ -31,5 +32,25 @@ export class PlacesService {
     async getPlaceById(id: number) {
         const place = await this.placeRepository.findOne({where: {id}});
         return place;
+    }
+
+    async getAllPlaces() {
+        const allPlaces = await this.placeRepository.findAll();
+        const places: PlaceInfoDto[] = []
+
+        for (let place of allPlaces) {
+            let p = new PlaceInfoDto(
+                place.id,
+                place.title,
+                place.description,
+                place.image,
+                place.address,
+                place.city,
+                place.latitude,
+                place.longitude,
+            );
+            places.push(p)
+        }
+        return places
     }
 }
