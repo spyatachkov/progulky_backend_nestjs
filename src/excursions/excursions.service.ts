@@ -219,14 +219,36 @@ export class ExcursionsService {
         const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: userId}, include: {all: true}});
         const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
 
-        let favoritesExcursions: Excursion[] = [];
+        let favoritesExcursions: ExtendedExcursionInstanceDto[] = [];
 
         for (let i of favoritesExcursionsIds) {
             // TODO: селектить так - это быдлота. надо делать красиво, но я пока не знаю как
             const fe = await this.excursionRepository.findByPk(i, {include: {all: true}})
-            favoritesExcursions.push(fe);
+
+            let fExcursion = new ExtendedExcursionInstanceDto(
+                fe.id,
+                fe.title,
+                fe.description,
+                true,
+                fe.ownerId,
+                fe.ownerRoleValue,
+                fe.image,
+                fe.rating,
+                fe.duration,
+                fe.distance,
+                fe.numberOfPoints,
+                {
+                    id: fe.owner.id,
+                    name: fe.owner.name,
+                    email: fe.owner.email,
+                },
+                fe.places.map((p, sort) => Place.toObj(p, sort)
+                ))
+
+            favoritesExcursions.push(fExcursion);
         }
-        return favoritesExcursions.map((e) => Excursion.toObj(e))
+
+        return favoritesExcursions
     }
 
     // Проверяет корректность авторизационного хедера и либо возвращает токен, либо кидает ошибку
