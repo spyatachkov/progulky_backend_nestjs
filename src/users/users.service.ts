@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {User} from "./users.model";
 import {InjectModel} from "@nestjs/sequelize";
 import {CreateUserDto} from "./dto/create-user.dto";
@@ -6,7 +6,6 @@ import {RolesService} from "../roles/roles.service";
 import {SetRoleDto} from "./dto/set-role.dto";
 import {UserInfoInstanceDto} from "./dto/user-info.dto";
 import {UsersFavoritesExcursions} from "./users-favorites-excursions.model";
-import {GetFavoritesExcursionsDto} from "./dto/get-favorites-excursions.dto";
 import {Excursion} from "../excursions/excursions.model";
 
 @Injectable()
@@ -51,22 +50,6 @@ export class UsersService {
         }
         //const user = await this.userRepository.findByPk(id);
         return user;
-    }
-
-    // Получение избранных экскурсий для пользователя чей id передается в DTO
-    async getFavoritesExcursions(dto: GetFavoritesExcursionsDto) {
-
-        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: dto.userId}, include: {all: true}});
-        const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
-
-        let favoritesExcursions: Excursion[] = [];
-
-        for (let i of favoritesExcursionsIds) {
-            // TODO: селектить так - это быдлота. надо делать красиво, но я пока не знаю как
-            const fe = await this.excursionsRepository.findByPk(i, {include: {all: true}})
-            favoritesExcursions.push(fe);
-        }
-        return favoritesExcursions.map((e) => Excursion.toObj(e))
     }
 
     async setRoleByValue(setRoleDto: SetRoleDto) {

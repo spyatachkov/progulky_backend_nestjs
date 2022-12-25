@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Post, Req} from '@nestjs/common';
 import {CreateUserDto} from "./dto/create-user.dto";
 import {UsersService} from "./users.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -6,8 +6,6 @@ import {User} from "./users.model";
 import {Role} from "../roles/roles.model";
 import {SetRoleDto} from "./dto/set-role.dto";
 import {BodyWithValidation} from "../decorators";
-import {GetFavoritesExcursionsDto} from "./dto/get-favorites-excursions.dto";
-import {Excursion} from "../excursions/excursions.model";
 
 @ApiTags('Пользователи')
 @Controller('users')
@@ -35,12 +33,4 @@ export class UsersController {
     setRoleByValue(@BodyWithValidation() setRoleDto: SetRoleDto) {
         return this.userService.setRoleByValue(setRoleDto);
     }
-
-    @ApiOperation({summary: "Получить избранные экскурсии"})
-    @ApiResponse({status: 200, type: Excursion})
-    @Post('favorites_excursions')
-    getExcursions(@BodyWithValidation() dto: GetFavoritesExcursionsDto) {
-        return this.userService.getFavoritesExcursions(dto)
-    }
-
 }

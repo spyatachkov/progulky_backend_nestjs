@@ -54,6 +54,14 @@ export class ExcursionsController {
         return this.excursionService.deleteExcursionFromFavorites(dto, authHeader)
     }
 
+    @ApiOperation({summary: "Получить избранные экскурсии"})
+    @ApiResponse({status: 200, type: [Excursion]})
+    @Get('favorites_excursions')
+    getExcursions(@Req() req: Request) {
+        const authHeader = req.headers.authorization;
+        return this.excursionService.getFavoritesExcursions(authHeader)
+    }
+
     // Deprecated: теперь точки привязываются вместе с созданием экскурсии
     // @ApiOperation({summary: "Добавить точку к экскурсии"})
     // @ApiResponse({status: 200, type: [Excursion]})

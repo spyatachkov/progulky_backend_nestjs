@@ -210,6 +210,25 @@ export class ExcursionsService {
         return message
     }
 
+    // Получение избранных экскурсий пользователя
+    async getFavoritesExcursions(authHeader: string) {
+        const token = await this.verifyHeader(authHeader);
+        const user = await this.authService.verifyToken(token);
+        const userId = user.id;
+
+        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: userId}, include: {all: true}});
+        const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
+
+        let favoritesExcursions: Excursion[] = [];
+
+        for (let i of favoritesExcursionsIds) {
+            // TODO: селектить так - это быдлота. надо делать красиво, но я пока не знаю как
+            const fe = await this.excursionRepository.findByPk(i, {include: {all: true}})
+            favoritesExcursions.push(fe);
+        }
+        return favoritesExcursions.map((e) => Excursion.toObj(e))
+    }
+
     // Проверяет корректность авторизационного хедера и либо возвращает токен, либо кидает ошибку
     private async verifyHeader(authHeader: string) {
         if (authHeader == undefined) {
