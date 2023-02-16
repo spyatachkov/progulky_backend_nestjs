@@ -12,6 +12,7 @@ import {nanoid} from "nanoid";
 import {InjectModel} from "@nestjs/sequelize";
 import {TokenPair} from "./entities/tokenpair.model";
 import {RequestNewTokenPairDto} from "./dto/request-new-token-pair.dto";
+import settings from "../settings/entities/settings";
 
 @Injectable()
 export class AuthService {
@@ -127,8 +128,8 @@ export class AuthService {
                 // Возможно стоит гуид еще какой-нибудь добавить в пейлоад
             }),
             //expiresAt: now.plus({seconds: 60}).toMillis(), // Через сколько истекает ацесс
-            refreshToken: nanoid(128), // Количество символов в рефреше
-            refreshExpiresAt: now.plus({seconds: 120}), // Через сколько истекает рефреш (в секундах) (30 дней = 2592000 сек)
+            refreshToken: nanoid(settings.refreshLength), // Количество символов в рефреше
+            refreshExpiresAt: now.plus({seconds: settings.refreshExpiresAt}), // Через сколько истекает рефреш (в секундах) (30 дней = 2592000 сек)
         };
 
         // TODO: возможно стоит сделать удаление. если генерируется новая пара, то удаляется старая (но тогда при новых входах будет выкидывать из активных сессий)

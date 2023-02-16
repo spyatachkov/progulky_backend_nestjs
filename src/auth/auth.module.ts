@@ -6,6 +6,8 @@ import {JwtModule} from "@nestjs/jwt";
 import {SequelizeModule} from "@nestjs/sequelize";
 import {TokenPair} from "./entities/tokenpair.model";
 
+import settings from "../settings/entities/settings";
+
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
@@ -15,7 +17,7 @@ import {TokenPair} from "./entities/tokenpair.model";
       JwtModule.register({
         secret: process.env.PRIVATE_KEY || 'SECRET',
         signOptions: {
-          expiresIn: '60s',
+          expiresIn: settings.expiresAt,
         }
       })
   ],
