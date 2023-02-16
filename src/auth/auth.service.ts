@@ -5,7 +5,6 @@ import {JwtService} from "@nestjs/jwt";
 import {User} from "../users/users.model";
 import * as bcrypt from 'bcryptjs';
 import {DateTime} from 'luxon';
-import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
 import {LoginUserDto} from "../users/dto/login-user.dto";
 import {NewTokenInfo} from "./dto/new-token-info.dto";
 import {nanoid} from "nanoid";
@@ -27,7 +26,6 @@ export class AuthService {
         const tokenPair = await this.generateJwtTokenPair(user.id, dto.deviceFingerprint);
 
         return tokenPair;
-        // return this.generateAuthUserInstance(user, tokenPair);
     }
 
     async refresh(dto: RequestNewTokenPairDto) {
@@ -67,27 +65,12 @@ export class AuthService {
         }
         const hashPassword = await bcrypt.hash(userDto.password, 5);
         const user = await this.userService.createUser({...userDto, password: hashPassword});
-        const token = await this.generateToken(user);
 
-        //return this.generateAuthUserInstance(user, token.token);
+        const tokenPair = await this.generateJwtTokenPair(user.id, userDto.deviceFingerprint);
+
+        return tokenPair
     }
 
-    // Сборка объекта пользователя из его данных и его токена
-    private generateAuthUserInstance(user: User, tokenPair: NewTokenInfo) {
-        const userAuthInstance: UserAuthInstanceDto = {
-            id: user.id,
-            accessToken: tokenPair.accessToken,
-            refreshToken: tokenPair.refreshToken,
-            name: user.name,
-            role: {
-                id: user.role.id,
-                value: user.role.value,
-                description: user.role.description,
-            },
-            email: user.email,
-        };
-        return userAuthInstance;
-    }
 
     // Получает на вход JWT токен и возвращает объект пользователя
     async verifyToken(token: string) {

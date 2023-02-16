@@ -2,7 +2,6 @@ import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
-import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
 import {LoginUserDto} from "../users/dto/login-user.dto";
 import {BodyWithValidation} from "../decorators";
 import {RequestNewTokenPairDto} from "./dto/request-new-token-pair.dto";
@@ -61,7 +60,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: 200,
-        type: UserAuthInstanceDto
+        type: NewTokenInfo
     })
     @Post('/registration')
     registration(@BodyWithValidation() userDto: CreateUserDto) {
