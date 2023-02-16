@@ -4,19 +4,59 @@ import {UsersService} from "../users/users.service";
 import {JwtService} from "@nestjs/jwt";
 import {User} from "../users/users.model";
 import * as bcrypt from 'bcryptjs';
+import {DateTime} from 'luxon';
 import {UserAuthInstanceDto} from "../users/dto/user-auth.dto";
 import {LoginUserDto} from "../users/dto/login-user.dto";
+import {NewTokenInfo} from "./dto/new-token-info.dto";
+import {nanoid} from "nanoid";
+import {InjectModel} from "@nestjs/sequelize";
+import {TokenPair} from "./entities/tokenpair.model";
+import {RequestNewTokenPairDto} from "./dto/request-new-token-pair.dto";
 
 @Injectable()
 export class AuthService {
 
     constructor(private userService: UsersService,
-                private jwtService: JwtService) {}
+                private jwtService: JwtService,
+                @InjectModel(TokenPair) private tokenPairRepository: typeof TokenPair,
+    ) {}
 
-    async login(userDto: LoginUserDto) {
-        const user = await this.validateUser(userDto);
-        const token = await this.generateToken(user);
-        return this.generateAuthUserInstance(user, token.token);
+    async login(dto: LoginUserDto) {
+        const user = await this.validateUser(dto);
+        const tokenPair = await this.generateJwtTokenPair(user.id, dto.deviceFingerprint);
+
+        return tokenPair;
+        // return this.generateAuthUserInstance(user, tokenPair);
+    }
+
+    async refresh(dto: RequestNewTokenPairDto) {
+        // Получение пары по рефрешу
+        const tokenPair = await this
+            .tokenPairRepository
+            .findOne(
+                {
+                    where: {
+                        refreshToken: dto.refreshToken,
+                        deviceFingerprint: dto.deviceFingerprint,
+                    }
+                }
+            );
+
+        // Если по такому рефрешу не нашлось записи или рефреш протух -> Кидаю ошибку
+        if (!tokenPair || DateTime.local() > tokenPair.refreshExpiresAt) {
+            throw new UnauthorizedException();
+        }
+
+        // Удаляем пару
+        await this.tokenPairRepository
+            .destroy({
+            where: {
+                refreshToken: dto.refreshToken,
+                deviceFingerprint: dto.deviceFingerprint,
+            }
+        });
+
+        return this.generateJwtTokenPair(tokenPair.userId, dto.deviceFingerprint);
     }
 
     async registration(userDto: CreateUserDto) {
@@ -28,14 +68,15 @@ export class AuthService {
         const user = await this.userService.createUser({...userDto, password: hashPassword});
         const token = await this.generateToken(user);
 
-        return this.generateAuthUserInstance(user, token.token);
+        //return this.generateAuthUserInstance(user, token.token);
     }
 
     // Сборка объекта пользователя из его данных и его токена
-    private generateAuthUserInstance(user: User, token: string) {
+    private generateAuthUserInstance(user: User, tokenPair: NewTokenInfo) {
         const userAuthInstance: UserAuthInstanceDto = {
             id: user.id,
-            token: token,
+            accessToken: tokenPair.accessToken,
+            refreshToken: tokenPair.refreshToken,
             name: user.name,
             role: {
                 id: user.role.id,
@@ -51,8 +92,8 @@ export class AuthService {
     async verifyToken(token: string) {
         try {
             return this.jwtService.verify(token);
-        } catch (_) {
-            throw new UnauthorizedException({message: 'Ошибка авторизации'})
+        } catch (e) { // Если ацесс протух, возвращаю 401
+            throw new UnauthorizedException(e)
         }
     }
 
@@ -76,8 +117,32 @@ export class AuthService {
         throw new UnauthorizedException({message: 'Некорректный email или пароль'})
     }
 
-    private async getUserById(id: number) {
-        const user = await this.userService.getUserById(id);
-        return user;
+    private async generateJwtTokenPair(userId: number, deviceFingerprint: string) {
+
+        const now = DateTime.local();
+
+        const tokenInfo: NewTokenInfo = {
+            accessToken: this.jwtService.sign({
+                id: userId,
+                // Возможно стоит гуид еще какой-нибудь добавить в пейлоад
+            }),
+            //expiresAt: now.plus({seconds: 60}).toMillis(), // Через сколько истекает ацесс
+            refreshToken: nanoid(128), // Количество символов в рефреше
+            refreshExpiresAt: now.plus({seconds: 120}), // Через сколько истекает рефреш (в секундах) (30 дней = 2592000 сек)
+        };
+
+        // TODO: возможно стоит сделать удаление. если генерируется новая пара, то удаляется старая (но тогда при новых входах будет выкидывать из активных сессий)
+        // await tokenPairRepository.delete({deviceFingerprint, account});
+
+        await this.tokenPairRepository.create({
+                deviceFingerprint: deviceFingerprint,
+                accessToken: tokenInfo.accessToken,
+                refreshToken: tokenInfo.refreshToken,
+                userId: userId,
+                refreshExpiresAt: tokenInfo.refreshExpiresAt,
+            }
+        )
+
+        return tokenInfo;
     }
 }

@@ -89,7 +89,7 @@ export class ExcursionsService {
 
         if (bearer !== 'Bearer' || !token) {
             // Если в хедере в авторизации пришла дичь
-            throw new UnauthorizedException({message: 'Ошибка авторизации'})
+            throw new UnauthorizedException({message: 'Ошибка авторизации. Неудалось распознать access-токен'})
         }
 
         try {
@@ -97,8 +97,8 @@ export class ExcursionsService {
             // собственная лента (отмечаются добавленные в избранное экскурсии)
             const excursionsIncludingFavorites = await this.getExcursionsIncludingFavorites(user.id) // Все экскурсии, включая избранные (для пользователя, которые образается с токеном)
             return excursionsIncludingFavorites
-        } catch (_) {
-            throw new UnauthorizedException({message: 'Ошибка авторизации'})
+        } catch (e) {
+            throw new UnauthorizedException({message: 'Ошибка авторизации. ' + e.response.name, status: e.status})
         }
     }
 

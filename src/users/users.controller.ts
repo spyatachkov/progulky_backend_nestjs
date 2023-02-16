@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Patch, Post, Req} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Post, Req, UseGuards} from '@nestjs/common';
 import {CreateUserDto} from "./dto/create-user.dto";
 import {UsersService} from "./users.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -6,6 +6,7 @@ import {User} from "./users.model";
 import {Role} from "../roles/roles.model";
 import {SetRoleDto} from "./dto/set-role.dto";
 import {BodyWithValidation} from "../decorators";
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 
 @ApiTags('Пользователи')
 @Controller('users')
@@ -22,6 +23,7 @@ export class UsersController {
 
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
+    @UseGuards(JwtAuthGuard)
     @Get()
     getAll() {
         return this.userService.getAllUsers();

@@ -7,6 +7,7 @@ import {Role} from "../roles/roles.model";
 import {RolesModule} from "../roles/roles.module";
 import {UsersFavoritesExcursions} from "./users-favorites-excursions.model";
 import {Excursion} from "../excursions/excursions.model";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
   controllers: [UsersController],
@@ -14,6 +15,7 @@ import {Excursion} from "../excursions/excursions.model";
   imports: [
       SequelizeModule.forFeature([User, Role, UsersFavoritesExcursions, Excursion]),
       RolesModule,
+      forwardRef(() => AuthModule),
   ],
   exports: [UsersService],
 })
