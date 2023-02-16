@@ -146,4 +146,8 @@ export class AuthService {
 
         return tokenInfo;
     }
+
+    public async me(userId: number) {
+        return await this.userService.getUserById(userId);
+    }
 }

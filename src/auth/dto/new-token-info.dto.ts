@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-export interface NewTokenInfo {
+export class NewTokenInfo {
     accessToken: string;
     //expiresAt: number;
     refreshToken: string;

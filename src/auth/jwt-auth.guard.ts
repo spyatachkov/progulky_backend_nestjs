@@ -24,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
                 throw new UnauthorizedException({message: 'Ошибка авторизации. Не удалось распознать access-токен'})
             }
             const user = this.jwtService.verify(token);
-            req.user = user;
+            req.body.user = user;
             return true
         } catch (e) {
             throw new UnauthorizedException({message: 'Ошибка авторизации. ' + e.name, statusCode: 401});

@@ -12,6 +12,6 @@ export class UserInfoInstanceDto {
     @ApiProperty({example: 'user@mail.ru', description: 'Почта'})
     email: string;
 
-    @ApiProperty({example: UserRoleInstanceDto, description: 'Id роли которую хотим установить'})
+    @ApiProperty({example: UserRoleInstanceDto, description: 'Роль'})
     role: UserRoleInstanceDto;
 }
