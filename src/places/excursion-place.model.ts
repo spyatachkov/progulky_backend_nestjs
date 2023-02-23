@@ -1,6 +1,6 @@
 import {
     Column,
-    DataType, ForeignKey, HasOne,
+    DataType, ForeignKey,
     Model,
     Table
 } from "sequelize-typescript";
