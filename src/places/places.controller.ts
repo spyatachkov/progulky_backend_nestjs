@@ -1,9 +1,8 @@
-import {Controller, Get, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Controller, Get, Post} from '@nestjs/common';
 import {CreatePlaceDto} from "./dto/create-place.dto";
-import {ApiConsumes, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Place} from "./places.model";
 import {PlacesService} from "./places.service";
-import {FileInterceptor} from "@nestjs/platform-express";
 import {BodyWithValidation, IdParam} from "../decorators";
 
 @ApiTags('Точки (места/достопримечательности)')
@@ -14,11 +13,8 @@ export class PlacesController {
     @Post()
     @ApiOperation({summary: "Создание точки"})
     @ApiResponse({status: 200, type: Place})
-    @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FileInterceptor('image'))
-    create(@BodyWithValidation() dto: CreatePlaceDto,
-           @UploadedFile() image) {
-        return this.placeService.createPlace(dto, image);
+    create(@BodyWithValidation() dto: CreatePlaceDto) {
+        return this.placeService.createPlace(dto);
     }
 
     @ApiOperation({summary: "Получение точки по id"})

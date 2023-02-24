@@ -3,21 +3,18 @@ import {CreatePlaceDto} from "./dto/create-place.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {Place} from "./places.model";
 import {PlaceInfoDto} from "./dto/place-info.dto";
-import {FilesService} from "../files/files.service";
-import {ExtendedExcursionInstanceDto} from "../excursions/dto/extended-excursion-instance.dto";
 
 @Injectable()
 export class PlacesService {
 
-    constructor(@InjectModel(Place) private placeRepository: typeof Place,
-                private fileService: FilesService) {}
+    constructor(
+        @InjectModel(Place) private placeRepository: typeof Place)
+    {}
 
-    async createPlace(dto: CreatePlaceDto, image: any) {
-        const filaName =  await this.fileService.createPlaceFile(image);
+    async createPlace(dto: CreatePlaceDto) {
 
         const place = await this.placeRepository.create({
             ...dto,
-            image: filaName,
             latitude: Number(dto.latitude),
             longitude: Number(dto.longitude)
         });

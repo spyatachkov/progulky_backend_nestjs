@@ -1,10 +1,9 @@
 import {Controller, Delete, Get, Param, Patch, Post, Req, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {ExcursionsService} from "./excursions.service";
-import {ApiConsumes, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Excursion} from "./excursions.model";
 import {CreateExcursionResponseDto} from "./dto/create-excursion-response.dto";
-import {FileInterceptor} from "@nestjs/platform-express";
 import {BodyWithValidation} from "../decorators";
 import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
 import { Request } from 'express';
@@ -20,14 +19,10 @@ export class ExcursionsController {
     @Post()
     @ApiOperation({summary: "Создание экскурсии"})
     @ApiResponse({status: 200, type: CreateExcursionResponseDto})
-    @ApiConsumes('multipart/form-data')
-    // @ApiImplicitFile({ name: 'image', required: true })
-    @UseInterceptors(FileInterceptor('image'))
     createExcursion(@BodyWithValidation() excursionDto: CreateExcursionDto,
-                    @UploadedFile() image,
                     @Req() req: Request) {
         const authHeader = req.headers.authorization;
-        return this.excursionService.createExcursion(excursionDto, image, authHeader);
+        return this.excursionService.createExcursion(excursionDto, authHeader);
     }
 
     @ApiOperation({summary: "Получение всех экскурсии"})

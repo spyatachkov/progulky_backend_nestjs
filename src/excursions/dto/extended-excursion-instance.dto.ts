@@ -69,5 +69,5 @@ export class ExtendedExcursionInstanceDto {
     readonly owner: UserInfoInstanceDto;
 
     @ApiProperty({example: PlaceInfoDto, description: 'Точки пренадлежащие этой экскурсии'})
-    readonly places: PlaceInfoDto;
+    readonly places: any;
 }

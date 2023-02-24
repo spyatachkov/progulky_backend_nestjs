@@ -4,12 +4,10 @@ import {InjectModel} from "@nestjs/sequelize";
 import {AddPlaceDto} from "../places/dto/add-place.dto";
 import {UsersService} from "../users/users.service";
 import {ExcursionPlaces} from "../places/excursion-place.model";
-import {FilesService} from "../files/files.service";
 import {CreateExcursionDto} from "./dto/create-excursion.dto";
 import {UsersFavoritesExcursions} from "../users/users-favorites-excursions.model";
 import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
 import {DeleteExcursionFromFavoritesDto} from "./dto/delete-excursion-from-favorites.dto";
-import {JwtService} from "@nestjs/jwt";
 import {AuthService} from "../auth/auth.service";
 import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
 import {Place} from "../places/places.model";
@@ -21,19 +19,16 @@ export class ExcursionsService {
                 @InjectModel(ExcursionPlaces) private excursionPlaces: typeof ExcursionPlaces,
                 @InjectModel(UsersFavoritesExcursions) private favoritesExcursionsRepository: typeof UsersFavoritesExcursions,
                 private userService: UsersService,
-                private fileService: FilesService,
                 private authService: AuthService) {
     }
 
     // в этой функции приведение к Number() идет из-за того, что на уровне декоратора
     // проверилось, что в запросе была строка в которой было число, а так как в multipart form data
     // всегда строки, непонятно как вообще может эта строка кастоваться в число, поэтому сделан принудительный каст и проверка
-    async createExcursion(dto: CreateExcursionDto, image: any, authHeader: string) {
+    async createExcursion(dto: CreateExcursionDto, authHeader: string) {
         const token = await this.verifyHeader(authHeader);
         let user = await this.authService.verifyToken(token);
         const userId = user.id;
-
-        const filaName =  await this.fileService.createFile(image);
 
         const placesIds = dto.placesIds.split(","); // Полученную строку с айдишниками превращаю в массив строк
         // TODO: сделать проверку на то, что в полученном массиве значения, которые кастуются в число
@@ -46,7 +41,6 @@ export class ExcursionsService {
 
         const excursion = await this.excursionRepository.create({
             ...dto,
-            image: filaName,
             ownerRoleValue: ownerRoleValue,
             numberOfPoints: numberOfPoints,
             ownerId: userId,
@@ -103,9 +97,13 @@ export class ExcursionsService {
     }
 
     private async getExcursionsIncludingFavorites(userId: number) {
-        const allExcursions = await this.excursionRepository.findAll({include: {all: true}});
-
+        const allExcursions = await this.excursionRepository.findAll({
+            include: {
+                all: true
+            },
+        });
         const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: userId}, include: {all: true}});
+
         const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
 
         let excursionsIncludingFavorites: ExtendedExcursionInstanceDto[] = [];
@@ -128,8 +126,11 @@ export class ExcursionsService {
                     name: e.owner.name,
                     email: e.owner.email,
                 },
-                e.places.map((p, sort) => Place.toObj(p, sort)
-            ));
+                e.places.map((p, sort) => {
+                    // TODO: не работает сортировка
+                    return Place.toObj(p, sort)
+                })
+            );
             // let pe = Excursion.toObj(e);
             if (favoritesExcursionsIds.includes(e.id)) { // такой айди есть в избранном
                 excursion.isFavorite = true
