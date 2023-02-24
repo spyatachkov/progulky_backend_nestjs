@@ -5,9 +5,10 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "../users/users.model";
 import {Role} from "./roles.model";
 import {BodyWithValidation} from "../decorators";
+import {API_V1, ROLES_TAG} from "../constrants";
 
-@ApiTags('Роли')
-@Controller('roles')
+@ApiTags(ROLES_TAG)
+@Controller(`${API_V1}/${ROLES_TAG}`)
 export class RolesController {
     constructor(private roleService: RolesService) {}
 

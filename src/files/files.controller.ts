@@ -3,9 +3,10 @@ import {ApiConsumes, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {FilesService} from "./files.service";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {AddImageResponse} from "./interfaces";
+import {API_V1, FILES_TAG} from "../constrants";
 
-@ApiTags('Файлы')
-@Controller('files')
+@ApiTags(FILES_TAG)
+@Controller(`${API_V1}/${FILES_TAG}`)
 export class FilesController {
 
     constructor(private filesService: FilesService) {

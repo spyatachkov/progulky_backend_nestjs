@@ -9,9 +9,10 @@ import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
 import { Request } from 'express';
 import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
 import {DeleteExcursionFromFavoritesDto} from "./dto/delete-excursion-from-favorites.dto";
+import {API_V1, EXCURSIONS_TAG} from "../constrants";
 
-@ApiTags('Экскурсии')
-@Controller('excursions')
+@ApiTags(EXCURSIONS_TAG)
+@Controller(`${API_V1}/${EXCURSIONS_TAG}`)
 export class ExcursionsController {
 
     constructor(private excursionService: ExcursionsService) {}

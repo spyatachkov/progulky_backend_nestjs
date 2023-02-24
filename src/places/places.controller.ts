@@ -4,9 +4,10 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Place} from "./places.model";
 import {PlacesService} from "./places.service";
 import {BodyWithValidation, IdParam} from "../decorators";
+import {API_V1, PLACES_TAG} from "../constrants";
 
-@ApiTags('Точки (места/достопримечательности)')
-@Controller('places')
+@ApiTags(PLACES_TAG)
+@Controller(`${API_V1}/${PLACES_TAG}`)
 export class PlacesController {
     constructor(private placeService: PlacesService) {}
 

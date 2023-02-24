@@ -7,9 +7,10 @@ import {Role} from "../roles/roles.model";
 import {SetRoleDto} from "./dto/set-role.dto";
 import {BodyWithValidation} from "../decorators";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import {API_V1, USERS_TAG} from "../constrants";
 
-@ApiTags('Пользователи')
-@Controller('users')
+@ApiTags(USERS_TAG)
+@Controller(`${API_V1}/${USERS_TAG}`)
 export class UsersController {
 
     constructor(private userService: UsersService) {}

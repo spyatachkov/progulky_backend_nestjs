@@ -9,9 +9,10 @@ import {NewTokenInfo} from "./dto/new-token-info.dto";
 import {JwtAuthGuard} from "./jwt-auth.guard";
 import {Request} from "express";
 import {UserInfoInstanceDto} from "../users/dto/user-info.dto";
+import {API_V1, AUTH_TAG} from "../constrants";
 
-@ApiTags('Авторизация и регистрация')
-@Controller('auth')
+@ApiTags(AUTH_TAG)
+@Controller(`${API_V1}/${AUTH_TAG}`)
 export class AuthController {
 
     constructor(private authService: AuthService) {}
