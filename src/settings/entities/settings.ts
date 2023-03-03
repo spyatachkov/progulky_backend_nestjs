@@ -13,10 +13,10 @@ export class Settings {
     public refreshLength = 128; // Длинна рефреш-токена
 
     @IsNumber()
-    public refreshExpiresAt = 100000; // Через сколько истекает refresh (в секундах) (30 дней = 2592000 сек)
+    public refreshExpiresAt = 300; // Через сколько истекает refresh (в секундах) (30 дней = 2592000 сек)
 
     @IsNumber()
-    public expiresAt = 100000; // Через сколько истекает access (в секундах)
+    public expiresAt = 60; // Через сколько истекает access (в секундах)
 }
 
 const settings = new Settings();
