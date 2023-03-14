@@ -65,3 +65,5 @@ var/www/.../-|
                              | -- docs
 ```
 
+## Интересные ресурсы
+1. https://my-js.org/docs/guide/sequelize/ - Руководство по Sequelize

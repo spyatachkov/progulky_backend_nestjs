@@ -8,6 +8,8 @@ import {
 import {ApiProperty} from "@nestjs/swagger";
 import {Excursion} from "../excursions/excursions.model";
 import {ExcursionPlaces} from "./excursion-place.model";
+import {ExtendedPlaceInfoDto} from "./dto/extended-place-info.dto";
+import {ShortPlaceInfoDto} from "./dto/short-place-info.dto";
 
 interface PlaceCreationAttrs {
     title: string;
@@ -70,6 +72,30 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
             latitude: place.latitude,
             longitude: place.longitude,
         }
+    }
+
+    static getShortPlaceInfo(p: Place): ShortPlaceInfoDto {
+        return  {
+            id: p.id,
+            sort: null,
+            title: p.title,
+            address: p.address,
+            latitude: p.latitude,
+            longitude: p.longitude,
+        };
+    }
+
+    static getExtendedPlaceInfo(p: Place): ExtendedPlaceInfoDto {
+        return  {
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            image: p.image,
+            address: p.address,
+            city: p.city,
+            latitude: p.latitude,
+            longitude: p.longitude,
+        };
     }
 
     // делает из модели объект, который возвращается в списке всех добавленных в базу мест

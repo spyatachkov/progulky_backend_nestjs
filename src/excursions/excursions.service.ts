@@ -9,14 +9,19 @@ import {UsersFavoritesExcursions} from "../users/users-favorites-excursions.mode
 import {AddExcursionToFavoritesDto} from "./dto/add-excursion-to-favorites.dto";
 import {DeleteExcursionFromFavoritesDto} from "./dto/delete-excursion-from-favorites.dto";
 import {AuthService} from "../auth/auth.service";
-import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
+import {UserInfoInstanceDto} from "../users/dto/user-info.dto";
 import {Place} from "../places/places.model";
+import {ShortExcursionInstanceDto} from "./dto/short-excursion-instance.dto";
+import {Op} from "sequelize";
+import {ExcursionFiltersDto} from "./dto/excursion-filters.dto";
+import {isNotEmpty} from "class-validator";
 
 @Injectable()
 export class ExcursionsService {
 
     constructor(@InjectModel(Excursion) private excursionRepository: typeof Excursion,
-                @InjectModel(ExcursionPlaces) private excursionPlaces: typeof ExcursionPlaces,
+                @InjectModel(Place) private placeRepository: typeof Place,
+                @InjectModel(ExcursionPlaces) private excursionPlacesRepository: typeof ExcursionPlaces,
                 @InjectModel(UsersFavoritesExcursions) private favoritesExcursionsRepository: typeof UsersFavoritesExcursions,
                 private userService: UsersService,
                 private authService: AuthService) {
@@ -66,80 +71,110 @@ export class ExcursionsService {
         };
     }
 
-    async getAllExcursions(authHeader: string) {
-        if (authHeader == undefined) {
-            // Если нет никакого авторизационного заголовка, возвращаю список всех экскурсий
-            const excursions = await this.excursionRepository.findAll({include: {all: true},});
-            return excursions.map((e) => Excursion.toObj(e));
-        }
-        const bearer = authHeader.split(' ')[0];
-        const token = authHeader.split(' ')[1];
+    // Список всех экскурсий (доступен без авторизации)
+    async getAllExcursions(filters: ExcursionFiltersDto) {
+        let excursions: Excursion[];
 
-        if (bearer == 'Bearer' && token == undefined) {
-            // Если токена нет, но есть 'Bearer' возвращаю список всех экскурсий
-            const excursions = await this.excursionRepository.findAll({include: {all: true},});
-            return excursions.map((e) => Excursion.toObj(e));
-        }
-
-        if (bearer !== 'Bearer' || !token) {
-            // Если в хедере в авторизации пришла дичь
-            throw new UnauthorizedException({message: 'Ошибка авторизации. Неудалось распознать access-токен'})
+        if (filters.q !== null && isNotEmpty(filters.q)) { // Если есть в запросе строка для поиска по ILIKE
+            excursions = await this.getExcursionsWithFilters(filters);
+        } else {
+            excursions = await this.excursionRepository
+                .findAll({
+                    include: {
+                        all: true,
+                        nested: true,
+                    },
+                });
         }
 
-        try {
-            const user = await this.authService.verifyToken(token);
-            // собственная лента (отмечаются добавленные в избранное экскурсии)
-            const excursionsIncludingFavorites = await this.getExcursionsIncludingFavorites(user.id) // Все экскурсии, включая избранные (для пользователя, которые образается с токеном)
-            return excursionsIncludingFavorites
-        } catch (e) {
-            throw new UnauthorizedException({message: 'Ошибка авторизации. ' + e.response.name, status: e.status})
-        }
+        return excursions
+            .map((e) => Excursion.getShortExcursion(e));
     }
 
-    private async getExcursionsIncludingFavorites(userId: number) {
-        const allExcursions = await this.excursionRepository.findAll({
-            include: {
-                all: true
-            },
-        });
-        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: userId}, include: {all: true}});
-
-        const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
-
-        let excursionsIncludingFavorites: ExtendedExcursionInstanceDto[] = [];
-
-        for (let e of allExcursions) {
-            let excursion = new ExtendedExcursionInstanceDto(
-                e.id,
-                e.title,
-                e.description,
-                false,
-                e.ownerId,
-                e.ownerRoleValue,
-                e.image,
-                e.rating,
-                e.duration,
-                e.distance,
-                e.numberOfPoints,
-                {
-                    id: e.owner.id,
-                    name: e.owner.name,
-                    email: e.owner.email,
+    private async getExcursionsWithFilters(filters: ExcursionFiltersDto) {
+        const excursions = await this.excursionRepository
+            .findAll({
+                include: {
+                    all: true,
+                    nested: true,
                 },
-                e.places.map((p, sort) => {
-                    // TODO: не работает сортировка
-                    return Place.toObj(p, sort)
-                })
-            );
-            // let pe = Excursion.toObj(e);
-            if (favoritesExcursionsIds.includes(e.id)) { // такой айди есть в избранном
-                excursion.isFavorite = true
-                excursionsIncludingFavorites.push(excursion)
-            } else {
-                excursionsIncludingFavorites.push(excursion)
+                where: {
+                    title: {
+                        [Op.iLike]: "%"+filters.q+"%",
+                    },
+                }
+            });
+
+        return excursions;
+    }
+
+    // Получить экскурсию по айди может только АВТОРИЗОВАННЫЙ пользователь
+    async getExcursionById(authHeader: string, id: number) {
+        const token = await this.verifyHeader(authHeader);
+        const u = await this.authService.verifyToken(token);
+        const user = await this.userService.getUserById(u.id);
+
+        // Экскурсия по id
+        const e = await this.excursionRepository
+            .findByPk(
+                id,
+                {
+                    include: {
+                        all: true,
+                        nested: true
+                    }
+                });
+
+        // id мест этой экскурсии
+        const placesIdsModels = await this.excursionPlacesRepository
+            .findAll({
+                where: {
+                    excursionId: e.id,
+                }
+            });
+
+        // id мест этой экскурсии и их порядковый номер (sort)
+        const placesIdsAndSort = placesIdsModels
+            .map((e) => {
+                return {
+                    placeId: e.placeId,
+                    sort: e.sort
+                };
+        });
+
+        const placesIds = placesIdsAndSort.map((e) => e.placeId);
+
+        // SELECT мест экскурсии с этим id
+        const p = await this.placeRepository.findAll({
+            where: {
+                id: placesIds,
             }
-        }
-        return excursionsIncludingFavorites;
+        });
+
+        const places = p.map((e, i) => {
+            const r = Place.getShortPlaceInfo(e);
+            r.sort = placesIdsAndSort[i].sort;
+            return r;
+        });
+
+        const excursionResponse = Excursion.getExtendedExcursion(e);
+        excursionResponse.places = places;
+
+        // Вычисление принадлежности этой экскурсии к избранным юзера
+        const ids = await this.getFavoritesExcursionsIds(user) // айди избранных экскурсий пользователя
+        excursionResponse.isFavorite = ids.includes(e.id);
+        return excursionResponse;
+    }
+
+    // id-шники избранных экскурсий пользователя
+    private async getFavoritesExcursionsIds(user: UserInfoInstanceDto) {
+        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository
+            .findAll({
+                where: {
+                    userId: user.id
+                },
+            });
+        return favoritesExcursionsModelByUserId.map((e) => e.excursionId);
     }
 
     async addPlace(dto: AddPlaceDto) {
@@ -162,14 +197,14 @@ export class ExcursionsService {
 
     // Обновление порядкого номера точки в экскурсии
     private async updatePlaceSortValue(placeId: number, excursionId: number, sortValue: number) {
-        await this.excursionPlaces.update(
+        await this.excursionPlacesRepository.update(
             {sort: sortValue},
             {where: {excursionId: excursionId, placeId: placeId}}
         );
     }
 
     private async selectAllPlacesExcursionById(excursionId: number) {
-        return await this.excursionPlaces.findAll({where: {excursionId: excursionId}});
+        return await this.excursionPlacesRepository.findAll({where: {excursionId: excursionId}});
     }
 
     // Добавление экскурсии в избранное по айди этой экскурсии для пользователя с переданным id
@@ -214,42 +249,36 @@ export class ExcursionsService {
     // Получение избранных экскурсий пользователя
     async getFavoritesExcursions(authHeader: string) {
         const token = await this.verifyHeader(authHeader);
-        const user = await this.authService.verifyToken(token);
-        const userId = user.id;
-
-        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository.findAll({where: {userId: userId}, include: {all: true}});
-        const favoritesExcursionsIds = favoritesExcursionsModelByUserId.map((f) => f.excursionId); // id избранных экскурсий пользователя
-
-        let favoritesExcursions: ExtendedExcursionInstanceDto[] = [];
-
-        for (let i of favoritesExcursionsIds) {
-            // TODO: селектить так - это быдлота. надо делать красиво, но я пока не знаю как
-            const fe = await this.excursionRepository.findByPk(i, {include: {all: true}})
-
-            let fExcursion = new ExtendedExcursionInstanceDto(
-                fe.id,
-                fe.title,
-                fe.description,
-                true,
-                fe.ownerId,
-                fe.ownerRoleValue,
-                fe.image,
-                fe.rating,
-                fe.duration,
-                fe.distance,
-                fe.numberOfPoints,
-                {
-                    id: fe.owner.id,
-                    name: fe.owner.name,
-                    email: fe.owner.email,
+        const u = await this.authService.verifyToken(token);
+        const user = await this.userService.getUserById(u.id);
+        const favoritesExcursionsModelByUserId = await this.favoritesExcursionsRepository
+            .findAll({
+                where: {
+                    userId: user.id
                 },
-                fe.places.map((p, sort) => Place.toObj(p, sort)
-                ))
+                include: {
+                    all: true
+                }
+            });
 
-            favoritesExcursions.push(fExcursion);
-        }
+        const favoritesExcursionsIds = favoritesExcursionsModelByUserId
+            .map((f) => f.excursionId); // id избранных экскурсий пользователя
 
-        return favoritesExcursions
+        let favoritesExcursions: ShortExcursionInstanceDto[] = [];
+
+        const fe = await this.excursionRepository
+            .findAll({
+                include: {
+                    all: true,
+                    nested: true,
+                },
+                where: {
+                    id: favoritesExcursionsIds,
+                }
+            });
+
+        favoritesExcursions = fe.map((e) => Excursion.getShortExcursion(e));
+        return favoritesExcursions;
     }
 
     // Проверяет корректность авторизационного хедера и либо возвращает токен, либо кидает ошибку

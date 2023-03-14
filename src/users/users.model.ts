@@ -1,15 +1,9 @@
-import {
-    BelongsTo, BelongsToMany,
-    Column,
-    DataType,
-    ForeignKey,
-    Model,
-    Table
-} from "sequelize-typescript";
+import {BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "../roles/roles.model";
 import {Excursion} from "../excursions/excursions.model";
 import {UsersFavoritesExcursions} from "./users-favorites-excursions.model";
+import {UserInfoInstanceDto} from "./dto/user-info.dto";
 
 interface UserCreationAttrs {
     name: string;
@@ -52,4 +46,18 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @BelongsToMany(() => Excursion, () => UsersFavoritesExcursions)
     favoritesExcursions: Excursion[];
+
+    // Перевод модели в объект юзера
+    static getUserInfo(u: User): UserInfoInstanceDto {
+        return  {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: {
+                id: u.role.id,
+                value: u.role.value,
+                description: u.role.description,
+            },
+        };
+    }
 }

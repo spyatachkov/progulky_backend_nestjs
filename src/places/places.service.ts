@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {CreatePlaceDto} from "./dto/create-place.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {Place} from "./places.model";
-import {PlaceInfoDto} from "./dto/place-info.dto";
+import {ExtendedPlaceInfoDto} from "./dto/extended-place-info.dto";
 
 @Injectable()
 export class PlacesService {
@@ -33,21 +33,12 @@ export class PlacesService {
 
     async getAllPlaces() {
         const allPlaces = await this.placeRepository.findAll();
-        const places: PlaceInfoDto[] = []
+        const places: ExtendedPlaceInfoDto[] = []
 
         for (let place of allPlaces) {
-            let p = new PlaceInfoDto(
-                place.id,
-                place.title,
-                place.description,
-                place.image,
-                place.address,
-                place.city,
-                place.latitude,
-                place.longitude,
-            );
+            let p: ExtendedPlaceInfoDto = Place.getExtendedPlaceInfo(place);
             places.push(p)
         }
-        return places
+        return places;
     }
 }

@@ -1,9 +1,8 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {UserInfoInstanceDto} from "../../users/dto/user-info.dto";
-import {ShortPlaceInfoDto} from "../../places/dto/short-place-info.dto";
 
-//  Полная Dto в которой экскурсия возвращается со всеми её точками
-export class ExtendedExcursionInstanceDto {
+// Краткая информация об экскурсии
+export class ShortExcursionInstanceDto {
 
     @ApiProperty({
         example: '1',
@@ -16,18 +15,6 @@ export class ExtendedExcursionInstanceDto {
         description: 'Заголовок экскурсии'
     })
     readonly title: string;
-
-    @ApiProperty({
-        example: 'Интерересное описание экскурсии',
-        description: 'Описание экскурсии'
-    })
-    readonly description: string;
-
-    @ApiProperty({
-        example: 'true',
-        description: 'Если - true, то экскурсия есть в избранном'
-    })
-    isFavorite: boolean;
 
     @ApiProperty({
         example: 'picture.jpg',
@@ -60,14 +47,7 @@ export class ExtendedExcursionInstanceDto {
     readonly numberOfPoints: number;
 
     @ApiProperty({
-        type: UserInfoInstanceDto,
-        description: 'Владелец (создатель) экскурсии'
-    })
+        example: UserInfoInstanceDto,
+        description: 'Владелец (создатель) экскурсии'})
     readonly owner: UserInfoInstanceDto;
-
-    @ApiProperty({
-        type: [ShortPlaceInfoDto],
-        description: 'Точки пренадлежащие этой экскурсии'
-    })
-    places: ShortPlaceInfoDto[];
 }
