@@ -75,7 +75,7 @@ export class ExcursionsService {
     async getAllExcursions(filters: ExcursionFiltersDto) {
         let excursions: Excursion[];
 
-        if (filters.q !== null && isNotEmpty(filters.q)) { // Если есть в запросе строка для поиска по ILIKE
+        if (filters !== null) { // Если в запросе есть квери параметры
             excursions = await this.getExcursionsWithFilters(filters);
         } else {
             excursions = await this.excursionRepository
@@ -92,6 +92,15 @@ export class ExcursionsService {
     }
 
     private async getExcursionsWithFilters(filters: ExcursionFiltersDto) {
+        let r_s: number;
+        let r_f: number;
+
+        if (filters.rating !== null) {
+            const r = this.convertStringToNumbersRating(filters.rating)
+            r_s = r.start
+            r_f = r.end
+        }
+
         const excursions = await this.excursionRepository
             .findAll({
                 include: {
@@ -99,13 +108,62 @@ export class ExcursionsService {
                     nested: true,
                 },
                 where: {
-                    title: {
-                        [Op.iLike]: "%"+filters.q+"%",
-                    },
+                    ...(filters.l_f_p && filters.l_s_p ? {
+                            distance: {
+                                [Op.between]: [filters.l_f_p, filters.l_s_p],
+                            },
+                        } : {}
+                    ),
+                    ...(filters.t_f_p && filters.t_s_p ? {
+                            duration: {
+                                [Op.between]: [filters.t_f_p, filters.t_s_p],
+                            },
+                        }: {}
+                    ),
+                    ...(r_s && r_f ? { // Рейтинг
+                            rating: {
+                                [Op.between]: [r_s, r_f]
+                            }
+                        } : {}
+                    ),
+                    ...(filters.q ? {
+                        title: {
+                            [Op.substring]: filters.q,
+                        },
+                    } : {}
+                    ),
                 }
             });
-
         return excursions;
+    }
+
+    // Перевод строки в конкретные значения рейтинга | all - 0-5.0 | high - 5.0-4.5 | middle - 4.5-4.0 | low - 4.0-3.5
+    private convertStringToNumbersRating(ratingString: string) {
+        let r_s: number;
+        let r_f: number;
+
+        switch (ratingString) {
+            case 'all':
+                r_s = 0;
+                r_f = 5.0;
+                break;
+            case 'high':
+                r_s = 4.5;
+                r_f = 5.0;
+                break;
+            case 'middle':
+                r_s = 4.0;
+                r_f = 4.5;
+                break;
+            case 'low':
+                r_s = 3.5;
+                r_f = 4.0;
+                break;
+        }
+        return {
+            'start': r_s,
+            'end': r_f
+        }
     }
 
     // Получить экскурсию по айди может только АВТОРИЗОВАННЫЙ пользователь

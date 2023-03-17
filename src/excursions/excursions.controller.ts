@@ -41,7 +41,6 @@ export class ExcursionsController {
     })
     @Get()
     getAllExcursions(@QueryWithValidation() filters: ExcursionFiltersDto) {
-        console.log(filters);
         return this.excursionService.getAllExcursions(filters);
     }
 
