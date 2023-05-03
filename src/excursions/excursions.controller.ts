@@ -81,6 +81,24 @@ export class ExcursionsController {
         return this.excursionService.deleteExcursionFromFavorites(dto, authHeader);
     }
 
+    /**
+     * Служебная ручка
+     * Ниже находятся ручка, до которой пользователи не имеют доступа,
+     * она забирает из базы все оценки экскурсии
+     * и добавляется их среднее арифметическое в поле rating экскурсии
+     * (в переспективе это метод для крона)
+     * */
+    @ApiOperation({
+        summary: "Запустить пересчет рейтинга"
+    })
+    @ApiResponse({
+        status: 200,
+    })
+    @Get('update_rating')
+    updateExcursionsRating() {
+        return this.excursionService.updateExcursionsRating();
+    }
+
     // Deprecated: теперь точки привязываются вместе с созданием экскурсии
     // @ApiOperation({summary: "Добавить точку к экскурсии"})
     // @ApiResponse({status: 200, type: [Excursion]})

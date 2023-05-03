@@ -7,3 +7,4 @@ export const AUTH_TAG = 'auth';
 export const EXCURSIONS_TAG = 'excursions';
 export const PLACES_TAG = 'places';
 export const FILES_TAG = 'files';
+export const RATING_TAG = 'rating';

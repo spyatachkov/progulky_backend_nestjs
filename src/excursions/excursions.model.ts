@@ -3,7 +3,7 @@ import {
     BelongsToMany,
     Column,
     DataType,
-    ForeignKey,
+    ForeignKey, HasMany,
     Model,
     Table
 } from "sequelize-typescript";
@@ -14,6 +14,7 @@ import {ExcursionPlaces} from "../places/excursion-place.model";
 import {UsersFavoritesExcursions} from "../users/users-favorites-excursions.model";
 import {ExtendedExcursionInstanceDto} from "./dto/extended-excursion-instance.dto";
 import {ShortExcursionInstanceDto} from "./dto/short-excursion-instance.dto";
+import {Rating} from "../rating/rating.model";
 
 interface ExcursionCreationAttrs {
     title: string;
@@ -147,6 +148,9 @@ export class Excursion extends Model<Excursion, ExcursionCreationAttrs> {
 
     @BelongsToMany(() => Place, () => ExcursionPlaces)
     places: Place[];
+
+    @HasMany(() => Rating)
+    ratings: Rating[];
 
     @BelongsToMany(() => User, () => UsersFavoritesExcursions)
     users: User[];

@@ -14,7 +14,6 @@ import {Place} from "../places/places.model";
 import {ShortExcursionInstanceDto} from "./dto/short-excursion-instance.dto";
 import {Op} from "sequelize";
 import {ExcursionFiltersDto} from "./dto/excursion-filters.dto";
-import {isNotEmpty} from "class-validator";
 
 @Injectable()
 export class ExcursionsService {
@@ -337,6 +336,32 @@ export class ExcursionsService {
 
         favoritesExcursions = fe.map((e) => Excursion.getShortExcursion(e));
         return favoritesExcursions;
+    }
+
+    // Запуск пересчета рейтинга экскурсий
+    async updateExcursionsRating() {
+        let excursions: Excursion[];
+
+        // Получение всех экскурсий из базы
+        excursions = await this.excursionRepository
+            .findAll({
+                include: {
+                    all: true,
+                    nested: true,
+                },
+            });
+
+        for (let excursion of excursions) {
+            let sum_rating = 0;
+            sum_rating = excursion.ratings.reduce((sum, current) => sum + current.rating, 0)
+            let arithmetic_mean = sum_rating / (excursion.ratings.length === 0 ? 1 : excursion.ratings.length)
+
+            await this.excursionRepository.update({ rating: arithmetic_mean }, {
+                where: {
+                    id: excursion.id
+                }
+            });
+        }
     }
 
     // Проверяет корректность авторизационного хедера и либо возвращает токен, либо кидает ошибку
