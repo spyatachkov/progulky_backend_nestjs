@@ -23,6 +23,12 @@ export class UserInfoInstanceDto {
     email: string;
 
     @ApiProperty({
+        example: '0000-0000-0000-000.jpg',
+        description: 'Название картинки в директории аватарок пользователя'
+    })
+    image: string;
+
+    @ApiProperty({
         type: UserRoleInstanceDto,
         description: 'Роль'
     })

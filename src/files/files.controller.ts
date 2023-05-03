@@ -39,4 +39,18 @@ export class FilesController {
     uploadPlaceImage(@UploadedFile() image): Promise<AddImageResponse> {
         return this.filesService.addPlaceImage(image);
     }
+
+    @Post('user')
+    @ApiOperation({
+        summary: "Загрузка аватара пользователя"
+    })
+    @ApiResponse({
+        status: 200,
+        type: AddImageResponse
+    })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileInterceptor('image'))
+    uploadUserImage(@UploadedFile() image): Promise<AddImageResponse> {
+        return this.filesService.uploadUserImage(image);
+    }
 }

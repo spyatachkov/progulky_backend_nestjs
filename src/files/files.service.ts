@@ -74,4 +74,22 @@ export class FilesService {
             throw new HttpException('Ошибка при записи файла', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Добавление картинки места
+    async uploadUserImage(file): Promise<AddImageResponse> {
+        try {
+            const userFileName = uuid.v4() + '.jpg';
+            const userFilePath = path.resolve(__dirname, '../../../', 'files/images/users'); // файлы сохраняются в папку на диске рядом с проектом
+            if (!fs.existsSync(userFilePath)) {
+                fs.mkdirSync(userFilePath, {recursive: true});
+            }
+            fs.writeFileSync(path.join(userFilePath, userFileName), file.buffer);
+
+            return {
+                fileName: userFileName
+            }
+        } catch (e) {
+            throw new HttpException('Ошибка при записи файла', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

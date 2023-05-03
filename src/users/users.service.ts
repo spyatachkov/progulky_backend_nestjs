@@ -7,6 +7,7 @@ import {SetRoleDto} from "./dto/set-role.dto";
 import {UserInfoInstanceDto} from "./dto/user-info.dto";
 import {UsersFavoritesExcursions} from "./users-favorites-excursions.model";
 import {Excursion} from "../excursions/excursions.model";
+import {AddUserImageDto} from "./dto/add-user-ymage.dto";
 
 @Injectable()
 export class UsersService {
@@ -42,6 +43,7 @@ export class UsersService {
             id: u.id,
             name: u.name,
             email: u.email,
+            image: u.image,
             role: {
                 id: u.role.id,
                 value: u.role.value,
@@ -50,6 +52,14 @@ export class UsersService {
         }
         //const user = await this.userRepository.findByPk(id);
         return user;
+    }
+
+    async setUserImage(dto: AddUserImageDto, userId: number) {
+        await this.userRepository.update({ image: dto.imageName }, {
+            where: {
+                id: userId
+            }
+        });
     }
 
     async setRoleByValue(setRoleDto: SetRoleDto) {
