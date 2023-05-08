@@ -91,14 +91,14 @@ export class AuthService {
     private async validateUser(userDto: LoginUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email);
         if (user == null) {
-            throw new UnauthorizedException({message: 'Некорректный email или пароль'})
+            throw new HttpException("Некорректный email или пароль", HttpStatus.BAD_REQUEST);
         }
         const passwordEquals = await bcrypt.compare(userDto.password, user.password);
 
         if (user && passwordEquals) {
             return user;
         }
-        throw new UnauthorizedException({message: 'Некорректный email или пароль'})
+        throw new HttpException("Некорректный email или пароль", HttpStatus.BAD_REQUEST);
     }
 
     private async generateJwtTokenPair(userId: number, deviceFingerprint: string) {
