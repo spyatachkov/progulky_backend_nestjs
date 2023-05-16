@@ -36,9 +36,13 @@ export class TokenPair extends Model<TokenPair, TokenPairCreationAttrs> {
         description: 'id пользователя, кому пренадлежат токены',
     })
     @ForeignKey(() => User)
+    // TODO: тут надо проставлять в базе onDelete: 'CASCADE' onUpdate: 'CASCADE' (я делаю руками в базе) Стоит это иметь в виду
+    // TODO: если это не сделать, то при удалении пользваотеля будет 500
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
     })
     userId: number;
 

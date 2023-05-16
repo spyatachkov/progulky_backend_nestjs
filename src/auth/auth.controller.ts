@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Controller, Delete, Get, Post, Req, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
@@ -66,5 +66,18 @@ export class AuthController {
     @Post('/registration')
     registration(@BodyWithValidation() userDto: CreateUserDto) {
         return this.authService.registration(userDto);
+    }
+
+    @ApiOperation({
+        summary: "Удаление аккаунта"
+    })
+    @ApiResponse({
+        status: 200,
+    })
+    @Delete('/delete')
+    @UseGuards(JwtAuthGuard)
+    delete(@Req() req: Request) {
+        const user = req.body.user;
+        return this.authService.delete(user.id);
     }
 }

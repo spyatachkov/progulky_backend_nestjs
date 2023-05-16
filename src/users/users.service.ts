@@ -68,4 +68,13 @@ export class UsersService {
             return user.save();
         });
     }
+
+    async deleteUserById(userId: number) {
+        await User.destroy({
+            where: {
+                id: userId
+            }
+        });
+        return {"message": "user is deleted"};
+    }
 }

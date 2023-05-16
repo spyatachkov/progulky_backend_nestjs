@@ -133,4 +133,8 @@ export class AuthService {
     public async me(userId: number) {
         return await this.userService.getUserById(userId);
     }
+
+    public async delete(userId: number) {
+        return await this.userService.deleteUserById(userId);
+    }
 }
